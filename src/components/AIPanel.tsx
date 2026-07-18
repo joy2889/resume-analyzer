@@ -1,221 +1,73 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React from "react";
-import { 
-  Paper, 
-  Box, 
-  Typography, 
-  Stack, 
-  Chip, 
-  Grid 
-} from "@mui/material";
 import { ResumeData } from "../types";
-import { 
-  Sparkles, 
-  Lightbulb, 
-  AlertTriangle, 
-  CheckSquare, 
-  Tag, 
-  ThumbsUp, 
-  ShieldAlert,
-  TrendingUp
-} from "lucide-react";
+import { Sparkles, Lightbulb, CheckCircle2, AlertTriangle, MessageSquare } from "lucide-react";
 
 interface AIPanelProps {
-  data: ResumeData;
   hasGenerated: boolean;
-  jobTitle: string;
+  resumeData: ResumeData | null;
 }
 
-export const AIPanel: React.FC<AIPanelProps> = ({
-  data,
-  hasGenerated,
-  jobTitle,
-}) => {
-  // Determine color theme based on the score
-  const getScoreColorClass = (score: number) => {
-    if (score >= 85) return "text-emerald-600 bg-emerald-50 border-emerald-100 ring-emerald-500/10";
-    if (score >= 70) return "text-amber-600 bg-amber-50 border-amber-100 ring-amber-500/10";
-    return "text-rose-600 bg-rose-50 border-rose-100 ring-rose-500/10";
-  };
-
-  const getScoreColor = (score: number) => {
-    if (score >= 85) return "success.main";
-    if (score >= 70) return "warning.main";
-    return "error.main";
-  };
-
-  const ringColor = getScoreColor(data.atsScore);
-
-  // Circumference for circular progress bar (r=24) -> 2 * PI * 24 = 150.79
-  const radius = 24;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (data.atsScore / 100) * circumference;
+export const AIPanel: React.FC<AIPanelProps> = ({ hasGenerated, resumeData }) => {
+  if (!hasGenerated || !resumeData) return null;
 
   return (
-    <Stack spacing={3} sx={{ transition: "all 0.3s ease", opacity: hasGenerated ? 1 : 0.85, textAlign: "left" }}>
+    <div className="bg-[#2D1B4E]/80 backdrop-blur border-8 border-[#00F5D4] rounded-3xl p-8 shadow-multi relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-full pattern-stripes opacity-10 pointer-events-none" />
       
-      {/* ATS Score Gauge Card */}
-      <Paper sx={{ p: 2.5, display: "flex", alignItems: "center", gap: 3 }}>
-        {/* Radial Progress Ring */}
-        <Box sx={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-          <svg className="w-16 h-16 transform -rotate-90">
-            <circle
-              cx="32"
-              cy="32"
-              r={radius}
-              className="stroke-slate-100"
-              strokeWidth="5"
-              fill="transparent"
-            />
-            <circle
-              cx="32"
-              cy="32"
-              r={radius}
-              strokeWidth="5"
-              fill="transparent"
-              strokeDasharray={circumference}
-              strokeDashoffset={hasGenerated ? strokeDashoffset : circumference}
-              strokeLinecap="round"
-              style={{
-                stroke: data.atsScore >= 85 ? "#10b981" : data.atsScore >= 70 ? "#f59e0b" : "#f43f5e",
-                transition: "stroke-dashoffset 1s ease-out"
-              }}
-            />
-          </svg>
-          <Typography variant="body2" sx={{ position: "absolute", fontWeight: "bold", color: "text.primary" }}>
-            {data.atsScore}%
-          </Typography>
-        </Box>
+      <div className="relative z-10">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="bg-[#FF3AF2] p-3 rounded-xl border-4 border-[#FFE600] -rotate-3 shadow-[4px_4px_0_#00F5D4]">
+            <Sparkles size={28} className="text-[#0D0D1A]" />
+          </div>
+          <h2 className="font-heading font-black text-4xl uppercase text-shadow-single">
+            AI <span className="text-[#FF6B35]">Insights</span>
+          </h2>
+        </div>
 
-        {/* Feedback Description */}
-        <Stack spacing={0.5}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <TrendingUp size={14} className="text-blue-600" />
-            <Typography variant="caption" sx={{ fontWeight: 900, textTransform: "uppercase", color: "text.secondary", letterSpacing: "0.5px" }}>
-              ATS Compliance Rating
-            </Typography>
-          </Box>
-          <Typography variant="caption" sx={{ color: "text.secondary", lineHeight: 1.4, display: "block" }}>
-            {data.atsScore >= 85 
-              ? "Excellent keywords match! This resume ranks in the top tier for parsers like Taleo or Greenhouse."
-              : data.atsScore >= 70 
-              ? "Good start. Add more industry keywords and quantitative achievements to unlock 85+ score."
-              : "Action required. Critical sections are lacking role-specific action verbs or measurable metrics."}
-          </Typography>
-        </Stack>
-      </Paper>
-
-      {/* AI Suggestions Box */}
-      <Paper sx={{ p: 3, display: "flex", flexDirection: "column", gap: 2.5 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, borderBottom: "1px solid", borderColor: "divider", pb: 1.5 }}>
-          <Sparkles size={16} className="text-blue-600" />
-          <Typography variant="caption" sx={{ fontWeight: 900, textTransform: "uppercase", color: "text.secondary", letterSpacing: "0.5px" }}>
-            2. AI Optimization Engine
-          </Typography>
-        </Box>
-
-        {/* High-Impact Verbs */}
-        <Box>
-          <Typography variant="caption" sx={{ fontWeight: 900, textTransform: "uppercase", color: "secondary.main", display: "block", mb: 1, letterSpacing: "0.5px" }}>
-            Power Verbs
-          </Typography>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}>
-            {data.actionVerbs.map((verb, idx) => (
-              <Chip 
-                key={idx} 
-                label={verb} 
-                size="small" 
-                variant="outlined" 
-                color="secondary"
-                sx={{ height: 24, fontSize: "11px", fontWeight: "medium" }}
-              />
-            ))}
-          </Box>
-        </Box>
-
-        {/* Achievements XYZ guidelines */}
-        <Box>
-          <Typography variant="caption" sx={{ fontWeight: 900, textTransform: "uppercase", color: "secondary.main", display: "block", mb: 1, letterSpacing: "0.5px" }}>
-            Achievement Framing (XYZ)
-          </Typography>
-          <Box sx={{ bgcolor: "blue.50", border: "1px solid", borderColor: "blue.100", p: 1.75, borderRadius: "4px" }}>
-            <Typography variant="caption" sx={{ color: "blue.900", display: "block", fontStyle: "italic", lineHeight: 1.4 }}>
-              "{data.achievements}"
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
-
-      {/* Keyword Optimization Cards */}
-      <Paper sx={{ p: 3, display: "flex", flexDirection: "column", gap: 2 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, borderBottom: "1px solid", borderColor: "divider", pb: 1.5 }}>
-          <Tag size={16} className="text-emerald-600" />
-          <Typography variant="caption" sx={{ fontWeight: 900, textTransform: "uppercase", color: "text.secondary", letterSpacing: "0.5px" }}>
-            3. ATS Keyword Density
-          </Typography>
-        </Box>
-        
-        <Typography variant="caption" sx={{ color: "text.secondary", lineHeight: 1.4, display: "block" }}>
-          Incorporate these critical high-scoring key phrases naturally inside your summary and experiences:
-        </Typography>
-        
-        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1 }}>
-          {data.keywords.map((kw, idx) => (
-            <Box 
-              key={idx} 
-              sx={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: 1, 
-                bgcolor: "background.default", 
-                border: "1px solid", 
-                borderColor: "divider", 
-                px: 1.5, 
-                py: 1, 
-                borderRadius: "4px" 
-              }}
-            >
-              <Typography variant="caption" sx={{ color: "emerald.500", fontWeight: "bold" }}>✓</Typography>
-              <Typography variant="caption" sx={{ fontWeight: "bold", color: "text.secondary", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
-                {kw}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
-      </Paper>
-
-      {/* ATS Actionable Checklist */}
-      <Paper sx={{ p: 3, display: "flex", flexDirection: "column", gap: 2 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, borderBottom: "1px solid", borderColor: "divider", pb: 1.5 }}>
-          <CheckSquare size={16} className="text-purple-600" />
-          <Typography variant="caption" sx={{ fontWeight: 900, textTransform: "uppercase", color: "text.secondary", letterSpacing: "0.5px" }}>
-            4. Recommended Adjustments
-          </Typography>
-        </Box>
-        
-        <Stack spacing={1.5}>
-          {data.atsFeedback.map((tip, idx) => (
-            <Box key={idx} sx={{ display: "flex", gap: 1.25, alignItems: "start" }}>
-              <Typography variant="caption" sx={{ color: "purple.500", fontWeight: "bold", mt: 0.25 }}>•</Typography>
-              <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: "medium", lineHeight: 1.4 }}>
-                {tip}
-              </Typography>
-            </Box>
-          ))}
+        <div className="bg-[#0D0D1A]/50 border-4 border-dashed border-[#FF3AF2] rounded-2xl p-6 mb-8">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-16 h-16 bg-[#FFE600] rounded-full border-4 border-[#FF6B35] flex items-center justify-center shadow-[0_0_20px_rgba(255,230,0,0.4)]">
+              <span className="font-heading font-black text-2xl text-[#0D0D1A]">{resumeData.atsScore}</span>
+            </div>
+            <div>
+              <h3 className="font-bold text-white text-xl uppercase tracking-wider">Estimated ATS Score</h3>
+              <p className="text-[#00F5D4] font-bold text-sm">Based on keyword density & formatting</p>
+            </div>
+          </div>
           
-          <Box sx={{ display: "flex", gap: 1.25, alignItems: "start" }}>
-            <Typography variant="caption" sx={{ color: "purple.500", fontWeight: "bold", mt: 0.25 }}>•</Typography>
-            <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: "medium", lineHeight: 1.4 }}>
-              Export in clean PDF format using Chrome's native save tool (A4 or Letter layout, single-page limit strongly advised).
-            </Typography>
-          </Box>
-        </Stack>
-      </Paper>
+          <div className="w-full bg-[#0D0D1A] h-4 rounded-full border-2 border-[#FF3AF2] overflow-hidden mt-4">
+            <div 
+              className="h-full bg-gradient-to-r from-[#FF3AF2] to-[#00F5D4] rounded-full"
+              style={{ width: `${resumeData.atsScore}%` }}
+            />
+          </div>
+        </div>
 
-    </Stack>
+        <div className="space-y-4">
+          <h4 className="font-heading text-2xl font-black uppercase text-[#FFE600] flex items-center gap-2">
+            <Lightbulb size={24} /> Review Notes
+          </h4>
+          
+          <div className="space-y-3">
+            {resumeData.atsFeedback.map((feedback, idx) => (
+              <div key={idx} className="bg-[#0D0D1A] border-2 border-[#00F5D4] rounded-xl p-4 flex gap-4 items-start">
+                <CheckCircle2 className="text-[#00F5D4] shrink-0 mt-0.5" size={20} />
+                <p className="text-white/90 font-medium">{feedback}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-8 bg-[#FF6B35]/20 border-4 border-[#FF6B35] rounded-xl p-4 flex gap-4 items-start">
+          <AlertTriangle className="text-[#FFE600] shrink-0 mt-1" size={24} />
+          <div>
+            <h5 className="font-bold text-[#FFE600] uppercase mb-1">Human Review Required</h5>
+            <p className="text-white/80 text-sm font-medium">
+              AI outputs are estimates. Please review all generated text for accuracy and ensure it truthfully represents your experience before submitting.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };

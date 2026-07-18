@@ -1,60 +1,18 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import { 
-  Container, 
-  Grid, 
-  Box, 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Button, 
-  Tabs, 
-  Tab, 
-  Paper, 
-  Stack, 
-  Badge,
-  Chip,
-  LinearProgress,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Divider,
-  CircularProgress
-} from "@mui/material";
-
 import { ResumeForm } from "./components/ResumeForm";
 import { ResumePreview } from "./components/ResumePreview";
 import { AIPanel } from "./components/AIPanel";
 import { TemplateMiniPreview } from "./components/TemplateMiniPreview";
-import { ResumeData, SearchParams, TemplateStyle } from "./types";
+import { ResumeData, SearchParams, TemplateStyle, PersonalInfo } from "./types";
 import { 
-  FileText, 
-  Award, 
-  Layers, 
-  Sparkles, 
-  CheckCircle, 
-  TrendingUp, 
-  Grid as GridIcon, 
-  Sliders as SlidersIcon, 
-  ShieldCheck, 
-  BadgeCheck, 
-  FileCheck,
-  AlertTriangle,
-  Lightbulb,
-  Scan,
-  RefreshCw,
-  FileBadge
+  FileText, Award, Layers, Sparkles, CheckCircle, TrendingUp, 
+  Grid as GridIcon, Sliders as SlidersIcon, ShieldCheck, 
+  BadgeCheck, FileCheck, AlertTriangle, Lightbulb, Scan, 
+  RefreshCw, FileBadge
 } from "lucide-react";
 
-// Robust client-side presets for instant clicks / fallbacks
+// (Keep the existing clientPresets exactly the same as before)
 const clientPresets: Record<string, ResumeData> = {
   software: {
     summary: "Innovative, performance-driven Software Engineer with over 5 years of experience architecting highly scalable full-stack applications. Proven expertise in React, Node.js, and cloud native architectures. Adept at driving rapid deployment schedules, refactoring monolithic legacy codebases into high-throughput microservices, and leading high-performing Agile sprint teams.",
@@ -85,7 +43,7 @@ const clientPresets: Record<string, ResumeData> = {
     atsFeedback: [
       "Solid campaign stats! Try aligning tools (like HubSpot) in both Core Competencies and Experience bullets.",
       "Ensure B2B terminology matches recruiters' filtering requirements.",
-      "Clean template style (Arial or Helvetica font) is highly readable on both modern ATS and recruiter screens."
+      "Clean template style (Arial or Helvetica font) is highly readable on modern ATS and recruiter screens."
     ]
   },
   healthcare: {
@@ -138,111 +96,19 @@ const clientPresets: Record<string, ResumeData> = {
   }
 };
 
-// Define cohesive Material UI theme matching "Geometric Balance" design system
-const customTheme = createTheme({
-  palette: {
-    mode: "light",
-    primary: {
-      main: "#1e293b", // slate-800
-      contrastText: "#ffffff",
-    },
-    secondary: {
-      main: "#2563eb", // blue-600
-    },
-    background: {
-      default: "#f8fafc", // slate-50
-      paper: "#ffffff",
-    },
-    text: {
-      primary: "#0f172a", // slate-900
-      secondary: "#475569", // slate-600
-    },
-  },
-  typography: {
-    fontFamily: [
-      "Inter",
-      "-apple-system",
-      "BlinkMacSystemFont",
-      '"Segoe UI"',
-      "Roboto",
-      '"Helvetica Neue"',
-      "Arial",
-      "sans-serif",
-    ].join(","),
-    h1: {
-      fontWeight: 800,
-      letterSpacing: "-0.025em",
-    },
-    h2: {
-      fontWeight: 800,
-      letterSpacing: "-0.025em",
-    },
-    h3: {
-      fontWeight: 700,
-      letterSpacing: "-0.015em",
-    },
-    button: {
-      textTransform: "none",
-      fontWeight: 700,
-    },
-  },
-  shape: {
-    borderRadius: 6,
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: "6px",
-          textTransform: "none",
-          fontWeight: 700,
-          boxShadow: "none",
-          "&:hover": {
-            boxShadow: "0 4px 12px rgba(37, 99, 235, 0.12)",
-          },
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          borderRadius: "6px",
-          border: "1px solid #e2e8f0",
-          boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05)",
-        },
-      },
-    },
-  },
-});
-
 export default function App() {
-  const [activeTab, setActiveTab] = useState<number>(1); // 0 = templates, 1 = editor, 2 = ats-score
-  const [prevTab, setPrevTab] = useState<number>(1);
+  const [activeTab, setActiveTab] = useState<number>(1); 
 
   const selectTab = (newTab: number) => {
     if (newTab !== activeTab) {
-      setPrevTab(activeTab);
       setActiveTab(newTab);
     }
   };
 
-  const direction = activeTab > prevTab ? 1 : -1;
-
   const slideFadeVariants = {
-    initial: (dir: number) => ({
-      opacity: 0,
-      x: dir * 40,
-    }),
-    animate: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.25 }
-    },
-    exit: (dir: number) => ({
-      opacity: 0,
-      x: dir * -40,
-      transition: { duration: 0.2 }
-    })
+    initial: { opacity: 0, y: 10 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } },
+    exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: "easeIn" } }
   };
 
   const [params, setParams] = useState<SearchParams>({
@@ -257,10 +123,60 @@ export default function App() {
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [hasGenerated, setHasGenerated] = useState<boolean>(false);
   const [resumeData, setResumeData] = useState<ResumeData>(clientPresets.default);
+  const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
+    name: "Alex Johnson",
+    contact: "New York, NY 10001 | (555) 123-4567 | alex.johnson@email.com | linkedin.com/in/alexj",
+    degree: "Bachelor of Science in Business Administration",
+    school: "State University",
+    gradDate: "May 2018",
+    gpa: "GPA: 3.8 / 4.0",
+    company1: "Global Innovations Inc.",
+    dates1: "Jan 2021 - Present",
+    role1: "Lead Innovator",
+    location1: "New York, NY",
+    company2: "TechSolutions LLC",
+    dates2: "Aug 2018 - Dec 2020",
+    role2: "Associate Analyst",
+    location2: "Boston, MA",
+    bullet2_1: "Managed day-to-day operations and improved client retention rates by 22% over two years.",
+    bullet2_2: "Developed comprehensive reporting dashboards that reduced data extraction time by 40 hours per month."
+  });
   const [atsScanning, setAtsScanning] = useState<boolean>(false);
   const [scanMessage, setScanMessage] = useState<string>("");
+  const [isParsingResume, setIsParsingResume] = useState<boolean>(false);
+  const [resumeText, setResumeText] = useState("");
 
-  // Trigger quick filling of demo data
+  const handleParseResume = async (textToParse: string) => {
+    if (!textToParse.trim()) return;
+    setIsParsingResume(true);
+    setHasGenerated(false);
+    
+    try {
+      const response = await fetch("/api/parse-resume", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resumeText: textToParse }),
+      });
+      if (response.ok) {
+        const parsed = await response.json();
+        setParams({
+          jobTitle: parsed.jobTitle || "",
+          industry: parsed.industry || "",
+          experienceLevel: parsed.experienceLevel || "Mid-Level",
+          additionalContext: parsed.additionalContext || "",
+          currentSkills: parsed.currentSkills || "",
+        });
+        if (parsed.resumeData) setResumeData(parsed.resumeData);
+        if (parsed.personalInfo) setPersonalInfo(parsed.personalInfo);
+        setHasGenerated(true);
+      }
+    } catch (err) {
+      console.error("Failed to parse resume", err);
+    } finally {
+      setIsParsingResume(false);
+    }
+  };
+
   const handleQuickFill = (role: "software" | "marketing" | "healthcare" | "product") => {
     const data = clientPresets[role];
     setResumeData(data);
@@ -280,7 +196,6 @@ export default function App() {
     setHasGenerated(true);
   };
 
-  // Trigger server-side AI content generation via our Express API
   const handleGenerate = async () => {
     if (!params.jobTitle) return;
 
@@ -290,9 +205,7 @@ export default function App() {
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(params),
       });
 
@@ -301,39 +214,25 @@ export default function App() {
         setResumeData(data);
         setHasGenerated(true);
       } else {
-        console.error("API response error, falling back to local matches");
-        // Fallback matching logic based on keywords
         const titleLower = params.jobTitle.toLowerCase();
         let fallbackData = clientPresets.default;
 
-        if (titleLower.includes("software") || titleLower.includes("engineer") || titleLower.includes("developer")) {
-          fallbackData = clientPresets.software;
-        } else if (titleLower.includes("marketing") || titleLower.includes("brand") || titleLower.includes("seo")) {
-          fallbackData = clientPresets.marketing;
-        } else if (titleLower.includes("nurse") || titleLower.includes("health") || titleLower.includes("medical")) {
-          fallbackData = clientPresets.healthcare;
-        } else if (titleLower.includes("product") || titleLower.includes("manager") || titleLower.includes("pm")) {
-          fallbackData = clientPresets.product;
-        }
+        if (titleLower.includes("software") || titleLower.includes("engineer") || titleLower.includes("developer")) fallbackData = clientPresets.software;
+        else if (titleLower.includes("marketing") || titleLower.includes("brand") || titleLower.includes("seo")) fallbackData = clientPresets.marketing;
+        else if (titleLower.includes("nurse") || titleLower.includes("health") || titleLower.includes("medical")) fallbackData = clientPresets.healthcare;
+        else if (titleLower.includes("product") || titleLower.includes("manager") || titleLower.includes("pm")) fallbackData = clientPresets.product;
 
         setResumeData(fallbackData);
         setHasGenerated(true);
       }
     } catch (err) {
-      console.error("API request failed, utilizing smart offline matching", err);
-      // Fallback matching logic on client error
       const titleLower = params.jobTitle.toLowerCase();
       let fallbackData = clientPresets.default;
 
-      if (titleLower.includes("software") || titleLower.includes("engineer") || titleLower.includes("developer")) {
-        fallbackData = clientPresets.software;
-      } else if (titleLower.includes("marketing") || titleLower.includes("brand") || titleLower.includes("seo")) {
-        fallbackData = clientPresets.marketing;
-      } else if (titleLower.includes("nurse") || titleLower.includes("health") || titleLower.includes("medical")) {
-        fallbackData = clientPresets.healthcare;
-      } else if (titleLower.includes("product") || titleLower.includes("manager") || titleLower.includes("pm")) {
-        fallbackData = clientPresets.product;
-      }
+      if (titleLower.includes("software") || titleLower.includes("engineer") || titleLower.includes("developer")) fallbackData = clientPresets.software;
+      else if (titleLower.includes("marketing") || titleLower.includes("brand") || titleLower.includes("seo")) fallbackData = clientPresets.marketing;
+      else if (titleLower.includes("nurse") || titleLower.includes("health") || titleLower.includes("medical")) fallbackData = clientPresets.healthcare;
+      else if (titleLower.includes("product") || titleLower.includes("manager") || titleLower.includes("pm")) fallbackData = clientPresets.product;
 
       setResumeData(fallbackData);
       setHasGenerated(true);
@@ -342,16 +241,15 @@ export default function App() {
     }
   };
 
-  // Run detailed simulated ATS parser check with visual output
   const runAtsScan = () => {
     setAtsScanning(true);
-    setScanMessage("Initializing ATS Screener Sandbox...");
+    setScanMessage("INITIALIZING ATS SCREENER SANDBOX...");
     setTimeout(() => {
-      setScanMessage("Extracting text and identifying document hierarchy...");
+      setScanMessage("EXTRACTING TEXT & HIERARCHY...");
       setTimeout(() => {
-        setScanMessage("Running semantic keyword-density algorithms...");
+        setScanMessage("RUNNING SEMANTIC KEYWORD-DENSITY ALGORITHMS...");
         setTimeout(() => {
-          setScanMessage("Validating single-column structure guidelines...");
+          setScanMessage("VALIDATING GUIDELINES...");
           setTimeout(() => {
             setAtsScanning(false);
             setScanMessage("");
@@ -361,525 +259,237 @@ export default function App() {
     }, 500);
   };
 
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    selectTab(newValue);
-  };
-
   return (
-    <ThemeProvider theme={customTheme}>
-      <CssBaseline />
-      <Box sx={{ minHeight: "100vh", bgcolor: "background.default", display: "flex", flexDirection: "column" }}>
-        
-        {/* Navbar Header using Material UI Design */}
-        <AppBar position="sticky" sx={{ bgcolor: "primary.main", borderBottom: "1px solid", borderColor: "slate.700", zIndex: 30 }} elevation={1} className="print:hidden">
-          <Container maxWidth="lg">
-            <Toolbar disableGutters sx={{ minHeight: 56, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                <Box sx={{ width: 32, height: 32, bgcolor: "secondary.main", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", color: "white" }}>
-                  AI
-                </Box>
-                <Box>
-                  <Typography variant="subtitle1" component="div" sx={{ fontWeight: 800, color: "white", lineHeight: 1.2 }}>
-                    ResuMatrix <Typography component="span" variant="subtitle1" sx={{ color: "secondary.light", fontWeight: 500 }}>Pro</Typography>
-                  </Typography>
-                </Box>
-              </Box>
+    <div className="min-h-screen bg-[#0D0D1A] text-white overflow-x-hidden relative font-body pattern-dots selection:bg-[#FF3AF2] selection:text-white">
+      {/* Decorative Floating Shapes */}
+      <div className="absolute top-[10%] left-[5%] text-[#00F5D4] animate-float z-0">
+        <Sparkles size={64} className="opacity-80" />
+      </div>
+      <div className="absolute top-[40%] right-[5%] text-[#FF3AF2] animate-float-reverse z-0">
+        <Sparkles size={48} className="opacity-80" />
+      </div>
+      <div className="absolute top-[80%] left-[10%] text-[#FFE600] animate-wiggle z-0">
+        <Sparkles size={80} className="opacity-80" />
+      </div>
+      
+      {/* Background Typography */}
+      <div className="absolute top-20 left-0 right-0 text-[12rem] md:text-[20rem] font-black text-[#FF3AF2]/5 pointer-events-none text-center select-none z-0">
+        HIRED
+      </div>
 
-              {/* Stateful Material-UI Tabs Header Component */}
-              <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, md: 3 } }}>
-                <Tabs 
-                  value={activeTab} 
-                  onChange={handleTabChange} 
-                  textColor="inherit"
-                  indicatorColor="secondary"
-                  sx={{
-                    minHeight: 40,
-                    "& .MuiTab-root": {
-                      minHeight: 40,
-                      py: 1,
-                      px: { xs: 1.5, sm: 2.5 },
-                      fontSize: "0.75rem",
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.05em",
-                      opacity: 0.8,
-                      "&.Mui-selected": {
-                        opacity: 1,
-                        color: "#60a5fa"
-                      }
-                    }
-                  }}
-                >
-                  <Tab id="tab-nav-templates" icon={<GridIcon size={14} />} iconPosition="start" label="Templates" />
-                  <Tab id="tab-nav-editor" icon={<SlidersIcon size={14} />} iconPosition="start" label="Editor" />
-                  <Tab id="tab-nav-ats" icon={<Award size={14} />} iconPosition="start" label="ATS Score" />
-                </Tabs>
+      {/* Navbar */}
+      <header className="sticky top-0 z-50 bg-[#2D1B4E]/90 backdrop-blur-md border-b-8 border-[#FF3AF2] shadow-multi">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-4 group">
+            <div className="w-14 h-14 bg-[#FFE600] border-4 border-[#00F5D4] rounded-xl flex items-center justify-center font-display text-2xl text-[#0D0D1A] shadow-[4px_4px_0_#FF3AF2] group-hover:rotate-6 transition-transform">
+              AI
+            </div>
+            <h1 className="font-heading font-black text-4xl uppercase tracking-tighter text-shadow-double">
+              ResuMatrix <span className="text-[#00F5D4]">Pro</span>
+            </h1>
+          </div>
+          
+          <nav className="flex gap-2 p-2 bg-[#0D0D1A] border-4 border-[#FF6B35] rounded-full shadow-[4px_4px_0_#7B2FFF]">
+            <button 
+              onClick={() => selectTab(0)} 
+              className={`px-6 py-3 rounded-full font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 ${activeTab === 0 ? 'bg-[#FF3AF2] text-white border-2 border-[#00F5D4] glow-accent' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+            >
+              <GridIcon size={18} /> Templates
+            </button>
+            <button 
+              onClick={() => selectTab(1)} 
+              className={`px-6 py-3 rounded-full font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 ${activeTab === 1 ? 'bg-[#00F5D4] text-[#0D0D1A] border-2 border-[#FF3AF2] glow-accent' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+            >
+              <SlidersIcon size={18} /> Editor
+            </button>
+            <button 
+              onClick={() => selectTab(2)} 
+              className={`px-6 py-3 rounded-full font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 ${activeTab === 2 ? 'bg-[#FFE600] text-[#0D0D1A] border-2 border-[#FF6B35] glow-accent' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+            >
+              <Award size={18} /> ATS Score
+            </button>
+          </nav>
+        </div>
+      </header>
 
-                <Box sx={{ display: { xs: "none", lg: "flex" }, alignItems: "center", gap: 1, bgcolor: "slate.800", px: 1.5, py: 0.5, borderRadius: "4px", border: "1px solid", borderColor: "slate.700" }}>
-                  <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "emerald.500" }} />
-                  <Typography variant="caption" sx={{ color: "slate.300", fontWeight: 700, textTransform: "uppercase", fontSize: "9px", letterSpacing: "1px" }}>
-                    98% Parser Accuracy
-                  </Typography>
-                </Box>
-              </Box>
-            </Toolbar>
-          </Container>
-        </AppBar>
+      {/* Main Workspace */}
+      <main className="max-w-7xl mx-auto px-6 py-24 relative z-10">
+        <AnimatePresence mode="wait">
+          
+          {/* TAB 0: TEMPLATES */}
+          {activeTab === 0 && (
+            <motion.div key="tab-0" variants={slideFadeVariants} initial="initial" animate="animate" exit="exit" className="space-y-12">
+              <div className="text-center max-w-4xl mx-auto mb-16">
+                <h2 className="font-heading font-black text-6xl md:text-8xl uppercase tracking-tighter text-shadow-triple mb-6">
+                  CHOOSE YOUR <span className="text-gradient">WEAPON</span>
+                </h2>
+                <p className="text-xl md:text-2xl text-white/80 font-bold max-w-2xl mx-auto border-4 border-dashed border-[#00F5D4] p-6 rounded-3xl bg-[#2D1B4E]/50 backdrop-blur">
+                  Professionally tuned single-column layouts. No boring graphics, just pure ATS-crushing structural power.
+                </p>
+              </div>
 
-        {/* Main Workspace containing Material UI Components & Motion Transitions */}
-        <Box sx={{ flexGrow: 1, py: { xs: 3, md: 4 } }}>
-          <Container maxWidth="lg">
-            <AnimatePresence mode="wait">
-              {activeTab === 0 && (
-                <motion.div
-                  key="templates-tab-view"
-                  custom={direction}
-                  variants={slideFadeVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  id="view-templates"
-                >
-                  {/* Title block */}
-                  <Box sx={{ textAlign: "center", maxWidth: 600, mx: "auto", mb: 4, mt: 1 }}>
-                    <Typography variant="h5" sx={{ fontWeight: 900, textTransform: "uppercase", color: "text.primary", mb: 1, letterSpacing: "-0.5px" }}>
-                      Select an ATS-Compliant Layout
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: "text.secondary", lineHeight: 1.6 }}>
-                      Choose from four professionally tuned, single-column frameworks. Every layout avoids structural columns, graphs, and visual decorations to score maximum points with standard candidate scanners.
-                    </Typography>
-                  </Box>
+              {/* Quick Scan Widget */}
+              <div className="bg-[#2D1B4E]/80 backdrop-blur-md border-4 border-[#FF6B35] rounded-3xl p-8 md:p-12 shadow-multi max-w-3xl mx-auto transform hover:-translate-y-2 transition-transform duration-300">
+                <h3 className="font-heading text-4xl font-black uppercase text-shadow-double flex items-center gap-4 mb-4 text-[#FFE600]">
+                  <Scan size={36} className="animate-pulse" /> QUICK SCAN EXISTING RESUME
+                </h3>
+                <p className="text-lg text-white/80 mb-6 font-bold">
+                  Drop your raw text here. Our AI will analyze the dopamine right out of it and pre-fill the editor for maximum impact!
+                </p>
+                <div className="space-y-4">
+                  <textarea 
+                    value={resumeText}
+                    onChange={(e) => setResumeText(e.target.value)}
+                    className="w-full bg-[#0D0D1A] border-4 border-[#00F5D4] rounded-2xl p-6 text-xl text-white font-mono placeholder:text-white/30 focus:outline-none focus:ring-4 focus:ring-[#FF3AF2]/50 focus:border-[#FF3AF2] transition-all min-h-[150px]"
+                    placeholder="Paste your raw text here..."
+                  />
+                  <button 
+                    onClick={() => { handleParseResume(resumeText); selectTab(1); }}
+                    disabled={isParsingResume || !resumeText.trim()}
+                    className="w-full bg-gradient-to-r from-[#FF3AF2] via-[#7B2FFF] to-[#00F5D4] text-white font-black uppercase tracking-widest text-xl h-16 rounded-full border-4 border-[#FFE600] shadow-multi hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 glow-accent"
+                  >
+                    {isParsingResume ? <RefreshCw className="animate-spin" size={24} /> : <Sparkles size={24} />}
+                    {isParsingResume ? "EXTRACTING AWESOMENESS..." : "AUTO-FILL RESUME"}
+                  </button>
+                </div>
+              </div>
 
-                  {/* Material Grid layout of templates */}
-                  <Grid container spacing={3} sx={{ mb: 4 }}>
-                    
-                    {/* Traditional Times */}
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                      <Paper sx={{ p: 3, height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", borderColor: templateStyle === "ats-traditional" ? "secondary.main" : "divider", borderWidth: templateStyle === "ats-traditional" ? 2 : 1 }}>
-                        <Box sx={{ mb: 3 }}>
-                          <Box sx={{ mb: 2.5, display: "flex", justifyContent: "center" }}>
-                            <TemplateMiniPreview style="ats-traditional" isSelected={templateStyle === "ats-traditional"} />
-                          </Box>
-                          <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "text.primary" }}>
-                            Traditional Classic
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase", display: "block", mt: 0.5 }}>
-                            Times New Roman Serif
-                          </Typography>
-                          <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.75rem", mt: 1.5, lineHeight: 1.5 }}>
-                            Recommended by top-tier recruiters. Employs classic margins and timeless styling designed to read with 100% accuracy on dated legacy trackers.
-                          </Typography>
-                        </Box>
-                        <Button 
-                          variant={templateStyle === "ats-traditional" ? "contained" : "outlined"} 
-                          color="primary"
-                          fullWidth
-                          size="small"
-                          onClick={() => {
-                            setTemplateStyle("ats-traditional");
-                            selectTab(1);
-                          }}
-                        >
-                          {templateStyle === "ats-traditional" ? "Selected & Edit" : "Select Traditional"}
-                        </Button>
-                      </Paper>
-                    </Grid>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Traditional */}
+                <div className={`bg-[#2D1B4E]/80 border-8 rounded-3xl p-8 flex flex-col justify-between shadow-multi transform transition-all duration-300 hover:rotate-1 hover:scale-105 ${templateStyle === "ats-traditional" ? 'border-[#00F5D4]' : 'border-[#FF3AF2]'}`}>
+                  <div className="mb-8">
+                    <h3 className="font-heading text-4xl font-black uppercase mb-2">Traditional Classic</h3>
+                    <div className="inline-block bg-[#FFE600] text-[#0D0D1A] px-4 py-1 font-bold uppercase rounded-full mb-4 border-2 border-[#FF3AF2] rotate-2">
+                      Times New Roman
+                    </div>
+                    <p className="text-lg opacity-80 font-medium">Recommended by recruiters. Employs timeless styling designed to read with 100% accuracy on older systems.</p>
+                  </div>
+                  <button 
+                    onClick={() => { setTemplateStyle("ats-traditional"); selectTab(1); }}
+                    className={`h-14 rounded-full font-black uppercase tracking-widest border-4 transition-all ${templateStyle === "ats-traditional" ? 'bg-[#00F5D4] text-[#0D0D1A] border-[#FF3AF2]' : 'bg-transparent text-white border-dashed border-[#FF3AF2] hover:bg-[#FF3AF2] hover:border-solid'}`}
+                  >
+                    {templateStyle === "ats-traditional" ? "SELECTED & EDIT" : "SELECT TRADITIONAL"}
+                  </button>
+                </div>
+                
+                {/* Modern */}
+                <div className={`bg-[#2D1B4E]/80 border-8 rounded-3xl p-8 flex flex-col justify-between shadow-multi transform transition-all duration-300 hover:-rotate-1 hover:scale-105 ${templateStyle === "ats-modern" ? 'border-[#FF6B35]' : 'border-[#00F5D4]'}`}>
+                  <div className="mb-8">
+                    <h3 className="font-heading text-4xl font-black uppercase mb-2">Modern Pro</h3>
+                    <div className="inline-block bg-[#FF3AF2] text-white px-4 py-1 font-bold uppercase rounded-full mb-4 border-2 border-[#FFE600] -rotate-2">
+                      Arial Sans-Serif
+                    </div>
+                    <p className="text-lg opacity-80 font-medium">Clean structure for tech ecosystems. Delivers modern spacing with standard font for safe readability.</p>
+                  </div>
+                  <button 
+                    onClick={() => { setTemplateStyle("ats-modern"); selectTab(1); }}
+                    className={`h-14 rounded-full font-black uppercase tracking-widest border-4 transition-all ${templateStyle === "ats-modern" ? 'bg-[#FF6B35] text-white border-[#FFE600]' : 'bg-transparent text-white border-dashed border-[#00F5D4] hover:bg-[#00F5D4] hover:text-[#0D0D1A] hover:border-solid'}`}
+                  >
+                    {templateStyle === "ats-modern" ? "SELECTED & EDIT" : "SELECT MODERN"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
-                    {/* Modern Arial */}
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                      <Paper sx={{ p: 3, height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", borderColor: templateStyle === "ats-modern" ? "secondary.main" : "divider", borderWidth: templateStyle === "ats-modern" ? 2 : 1 }}>
-                        <Box sx={{ mb: 3 }}>
-                          <Box sx={{ mb: 2.5, display: "flex", justifyContent: "center" }}>
-                            <TemplateMiniPreview style="ats-modern" isSelected={templateStyle === "ats-modern"} />
-                          </Box>
-                          <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "text.primary" }}>
-                            Modern Professional
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase", display: "block", mt: 0.5 }}>
-                            Arial Sans-Serif
-                          </Typography>
-                          <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.75rem", mt: 1.5, lineHeight: 1.5 }}>
-                            Clean left-aligned structure designed for tech and startup ecosystems. Delivers modern spacing with standard Arial font for safe readability.
-                          </Typography>
-                        </Box>
-                        <Button 
-                          variant={templateStyle === "ats-modern" ? "contained" : "outlined"} 
-                          color="primary"
-                          fullWidth
-                          size="small"
-                          onClick={() => {
-                            setTemplateStyle("ats-modern");
-                            selectTab(1);
-                          }}
-                        >
-                          {templateStyle === "ats-modern" ? "Selected & Edit" : "Select Modern"}
-                        </Button>
-                      </Paper>
-                    </Grid>
+          {/* TAB 1: EDITOR */}
+          {activeTab === 1 && (
+            <motion.div key="tab-1" variants={slideFadeVariants} initial="initial" animate="animate" exit="exit">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div className="lg:col-span-5 flex flex-col gap-8">
+                  <ResumeForm
+                    params={params}
+                    setParams={setParams}
+                    templateStyle={templateStyle}
+                    setTemplateStyle={setTemplateStyle}
+                    isGenerating={isGenerating}
+                    onGenerate={handleGenerate}
+                    isParsing={isParsingResume}
+                    onParseResume={handleParseResume}
+                  />
+                  <AIPanel 
+                    hasGenerated={hasGenerated}
+                    resumeData={resumeData}
+                  />
+                </div>
+                <div className="lg:col-span-7 sticky top-32 z-20">
+                  <div className="bg-[#2D1B4E]/80 backdrop-blur-md border-8 border-[#00F5D4] rounded-3xl p-4 md:p-8 shadow-multi-lg relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-full pattern-stripes opacity-10 pointer-events-none" />
+                    <ResumePreview
+                      data={resumeData}
+                      setData={setResumeData}
+                      personalInfo={personalInfo}
+                      setPersonalInfo={setPersonalInfo}
+                      templateStyle={templateStyle}
+                      jobTitle={params.jobTitle}
+                    />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
-                    {/* Executive Garamond */}
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                      <Paper sx={{ p: 3, height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", borderColor: templateStyle === "ats-executive" ? "secondary.main" : "divider", borderWidth: templateStyle === "ats-executive" ? 2 : 1 }}>
-                        <Box sx={{ mb: 3 }}>
-                          <Box sx={{ mb: 2.5, display: "flex", justifyContent: "center" }}>
-                            <TemplateMiniPreview style="ats-executive" isSelected={templateStyle === "ats-executive"} />
-                          </Box>
-                          <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "text.primary" }}>
-                            Executive Elegant
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase", display: "block", mt: 0.5 }}>
-                            Garamond Serif Style
-                          </Typography>
-                          <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.75rem", mt: 1.5, lineHeight: 1.5 }}>
-                            Dignified, authority-driven presentation. Features elegant headers and double borders optimal for managers, leads, and executives.
-                          </Typography>
-                        </Box>
-                        <Button 
-                          variant={templateStyle === "ats-executive" ? "contained" : "outlined"} 
-                          color="primary"
-                          fullWidth
-                          size="small"
-                          onClick={() => {
-                            setTemplateStyle("ats-executive");
-                            selectTab(1);
-                          }}
-                        >
-                          {templateStyle === "ats-executive" ? "Selected & Edit" : "Select Executive"}
-                        </Button>
-                      </Paper>
-                    </Grid>
+          {/* TAB 2: ATS SCORE */}
+          {activeTab === 2 && (
+            <motion.div key="tab-2" variants={slideFadeVariants} initial="initial" animate="animate" exit="exit" className="max-w-4xl mx-auto space-y-8">
+              
+              <div className="bg-[#2D1B4E]/90 border-8 border-[#FF3AF2] rounded-3xl p-10 md:p-16 shadow-multi text-center relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-full pattern-checker opacity-10 pointer-events-none" />
+                <h2 className="font-heading text-6xl font-black uppercase text-shadow-double mb-8 z-10 relative">
+                  ATS <span className="text-[#FFE600]">SCORECARD</span>
+                </h2>
 
-                    {/* Clean Minimalist */}
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                      <Paper sx={{ p: 3, height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", borderColor: templateStyle === "ats-clean" ? "secondary.main" : "divider", borderWidth: templateStyle === "ats-clean" ? 2 : 1 }}>
-                        <Box sx={{ mb: 3 }}>
-                          <Box sx={{ mb: 2.5, display: "flex", justifyContent: "center" }}>
-                            <TemplateMiniPreview style="ats-clean" isSelected={templateStyle === "ats-clean"} />
-                          </Box>
-                          <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "text.primary" }}>
-                            Clean Minimalist
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase", display: "block", mt: 0.5 }}>
-                            Symmetrical Layout
-                          </Typography>
-                          <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.75rem", mt: 1.5, lineHeight: 1.5 }}>
-                            Symmetrical layouts utilizing neat typography hierarchies. Built with generous margins for readability across medical and retail fields.
-                          </Typography>
-                        </Box>
-                        <Button 
-                          variant={templateStyle === "ats-clean" ? "contained" : "outlined"} 
-                          color="primary"
-                          fullWidth
-                          size="small"
-                          onClick={() => {
-                            setTemplateStyle("ats-clean");
-                            selectTab(1);
-                          }}
-                        >
-                          {templateStyle === "ats-clean" ? "Selected & Edit" : "Select Clean"}
-                        </Button>
-                      </Paper>
-                    </Grid>
+                {atsScanning ? (
+                  <div className="space-y-6 flex flex-col items-center">
+                    <Scan className="animate-spin text-[#00F5D4]" size={80} />
+                    <p className="text-3xl font-bold uppercase text-[#FF6B35] animate-pulse">{scanMessage}</p>
+                    <div className="w-full bg-[#0D0D1A] h-4 rounded-full border-2 border-[#FF3AF2] overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-[#FF3AF2] to-[#00F5D4] w-1/2 animate-pulse rounded-full" />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-12">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-12">
+                      <div className="w-48 h-48 bg-[#0D0D1A] rounded-full border-8 border-[#00F5D4] flex items-center justify-center shadow-[0_0_60px_rgba(0,245,212,0.4)] relative">
+                        <div className="absolute -top-4 -right-4 bg-[#FFE600] text-[#0D0D1A] font-black p-2 rounded-full border-4 border-[#FF3AF2] rotate-12">
+                          EXCELLENT!
+                        </div>
+                        <span className="font-heading font-black text-7xl text-gradient">{resumeData.atsScore}</span>
+                      </div>
+                      <div className="text-left space-y-4">
+                        <h3 className="font-heading text-4xl font-black uppercase text-[#FF3AF2]">You're Ready.</h3>
+                        <p className="text-xl text-white/80 font-bold max-w-sm">This resume hits all the major keywords for <span className="text-[#00F5D4]">{params.jobTitle || 'your role'}</span>.</p>
+                      </div>
+                    </div>
 
-                  </Grid>
+                    <div className="text-left bg-[#0D0D1A]/50 rounded-2xl p-8 border-4 border-[#FF6B35]">
+                      <h4 className="font-heading text-2xl font-black uppercase mb-6 flex items-center gap-3 text-[#FFE600]">
+                        <Lightbulb size={28} /> AI Feedback Notes
+                      </h4>
+                      <ul className="space-y-4">
+                        {resumeData.atsFeedback.map((feedback, idx) => (
+                          <li key={idx} className="flex items-start gap-4">
+                            <CheckCircle className="text-[#00F5D4] shrink-0 mt-1" size={24} />
+                            <span className="text-lg font-medium">{feedback}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
 
-                  {/* Informative Banner */}
-                  <Paper sx={{ p: 3, maxWidth: 650, mx: "auto", display: "flex", alignItems: "center", gap: 2, bgcolor: "blue.50", border: "1px solid", borderColor: "blue.100" }}>
-                    <ShieldCheck className="text-blue-600 shrink-0" size={24} />
-                    <Typography variant="caption" sx={{ color: "text.secondary", display: "block", lineHeight: 1.5 }}>
-                      <strong>Standard Parser Policy:</strong> ResuMatrix ensures that all exported resumes adhere strictly to the plain text model required by candidate trackers. All options above are 100% compliant.
-                    </Typography>
-                  </Paper>
-                </motion.div>
-              )}
-
-              {activeTab === 1 && (
-                <motion.div
-                  key="editor-tab-view"
-                  custom={direction}
-                  variants={slideFadeVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  id="view-editor"
-                >
-                  <Grid container spacing={3}>
-                    {/* Left Panel - Configurations & AI Score Side Panel (4 cols) */}
-                    <Grid size={{ xs: 12, lg: 4 }} sx={{ display: "flex", flexDirection: "column", gap: 3 }} className="print:hidden">
-                      <ResumeForm
-                        params={params}
-                        setParams={setParams}
-                        templateStyle={templateStyle}
-                        setTemplateStyle={setTemplateStyle}
-                        isGenerating={isGenerating}
-                        onGenerate={handleGenerate}
-                        onQuickFill={handleQuickFill}
-                      />
-
-                      <AIPanel
-                        data={resumeData}
-                        hasGenerated={hasGenerated}
-                        jobTitle={params.jobTitle}
-                      />
-                    </Grid>
-
-                    {/* Right Panel - Interactive Resume Canvas (8 cols) */}
-                    <Grid size={{ xs: 12, lg: 8 }} sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                      <ResumePreview
-                        data={resumeData}
-                        setData={setResumeData}
-                        templateStyle={templateStyle}
-                        jobTitle={params.jobTitle}
-                      />
-                    </Grid>
-                  </Grid>
-                </motion.div>
-              )}
-
-              {activeTab === 2 && (
-                <motion.div
-                  key="ats-score-tab-view"
-                  custom={direction}
-                  variants={slideFadeVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  id="view-atsscore"
-                  className="space-y-8 text-left"
-                >
-                  {/* Analysis Header */}
-                  <Paper sx={{ p: 3, display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { xs: "flex-start", sm: "center" }, gap: 3 }}>
-                    <Box>
-                      <Typography variant="h6" sx={{ fontWeight: 900, textTransform: "uppercase", color: "text.primary" }}>
-                        ATS Audit & Optimizer Hub
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                        Run candidate screenings instantly against our semantic intelligence parser engine.
-                      </Typography>
-                    </Box>
-                    <Button
-                      variant="contained"
-                      color="secondary"
+                    <button 
                       onClick={runAtsScan}
-                      disabled={atsScanning}
-                      startIcon={atsScanning ? <CircularProgress size={16} color="inherit" /> : <Scan size={14} />}
-                      sx={{ alignSelf: { xs: "stretch", sm: "auto" } }}
+                      className="bg-transparent border-4 border-dashed border-[#00F5D4] text-white px-8 py-4 rounded-full font-black uppercase text-xl hover:bg-[#00F5D4] hover:text-[#0D0D1A] hover:border-solid transition-all"
                     >
-                      {atsScanning ? "Parsing Document..." : "Re-Scan Resume"}
-                    </Button>
-                  </Paper>
+                      RE-RUN FULL SCAN
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
 
-                  {/* Loader Screen */}
-                  {atsScanning && (
-                    <motion.div 
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      <Paper sx={{ p: 3, bgcolor: "slate.900", color: "common.white", border: "1px solid", borderColor: "slate.700" }}>
-                        <Stack spacing={1}>
-                          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, color: "blue.400" }}>
-                            <Box sx={{ width: 8, height: 8, bgcolor: "secondary.main", borderRadius: "50%", animation: "pulse 1s infinite" }} />
-                            <Typography variant="body2" sx={{ fontFamily: "monospace", fontWeight: "bold" }}>
-                              {scanMessage}
-                            </Typography>
-                          </Box>
-                          <Typography variant="caption" sx={{ fontFamily: "monospace", color: "slate.400" }}>
-                            System Logs: 100% structure check, no charts detected, verified text-layer encoding.
-                          </Typography>
-                        </Stack>
-                      </Paper>
-                    </motion.div>
-                  )}
-
-                  {/* Scoring Gauge layout */}
-                  <Grid container spacing={3}>
-                    
-                    {/* Score Dial */}
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <Paper sx={{ p: 4, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", height: "100%" }}>
-                        <Typography variant="caption" sx={{ fontWeight: 900, textTransform: "uppercase", color: "text.secondary", letterSpacing: "1px", mb: 3 }}>
-                          Compliance Grade
-                        </Typography>
-
-                        <Box sx={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", mb: 3 }}>
-                          <svg className="w-40 h-40 transform -rotate-90">
-                            <circle
-                              cx="80"
-                              cy="80"
-                              r="64"
-                              className="stroke-slate-100"
-                              strokeWidth="12"
-                              fill="transparent"
-                            />
-                            <circle
-                              cx="80"
-                              cy="80"
-                              r="64"
-                              className="stroke-blue-600 transition-all duration-1000 ease-out"
-                              strokeWidth="12"
-                              fill="transparent"
-                              strokeDasharray={2 * Math.PI * 64}
-                              strokeDashoffset={(2 * Math.PI * 64) - (resumeData.atsScore / 100) * (2 * Math.PI * 64)}
-                              strokeLinecap="round"
-                            />
-                          </svg>
-                          <Box sx={{ position: "absolute", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                            <Typography variant="h3" sx={{ fontWeight: 900, color: "text.primary" }}>
-                              {resumeData.atsScore}%
-                            </Typography>
-                            <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>
-                              Rating
-                            </Typography>
-                          </Box>
-                        </Box>
-
-                        <Stack spacing={1.5} sx={{ width: "100%" }}>
-                          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, bgcolor: "emerald.50", px: 2, py: 1, borderRadius: "4px", color: "emerald.700" }}>
-                            <BadgeCheck size={16} />
-                            <Typography variant="caption" sx={{ fontWeight: 700, textTransform: "uppercase" }}>
-                              Strong Competency Match
-                            </Typography>
-                          </Box>
-                          <Typography variant="caption" sx={{ color: "text.secondary", lineHeight: 1.5, px: 2 }}>
-                            Your keyword selection is highly competitive. Aim for 85%+ to secure automated interviews.
-                          </Typography>
-                        </Stack>
-                      </Paper>
-                    </Grid>
-
-                    {/* Specific checks */}
-                    <Grid size={{ xs: 12, md: 8 }}>
-                      <Paper sx={{ p: 4, height: "100%" }}>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid", borderColor: "divider", pb: 2, mb: 3 }}>
-                          <FileBadge className="text-blue-600" size={20} />
-                          <Typography variant="subtitle1" sx={{ fontWeight: 800, color: "text.primary" }}>
-                            Structural Checklist Analysis
-                          </Typography>
-                        </Box>
-
-                        <Grid container spacing={2} sx={{ mb: 4 }}>
-                          <Grid size={{ xs: 12, sm: 6 }}>
-                            <Box sx={{ p: 2, bgcolor: "background.default", border: "1px solid", borderColor: "divider", borderRadius: "4px", display: "flex", alignItems: "start", gap: 1.5 }}>
-                              <CheckCircle className="text-emerald-500 shrink-0 mt-0.5" size={16} />
-                              <Box>
-                                <Typography variant="subtitle2" sx={{ fontWeight: "bold", fontSize: "0.75rem" }}>
-                                  No Multi-Column Grids
-                                </Typography>
-                                <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 0.5 }}>
-                                  Avoids table/grid wrapping bugs inside Taleo parse algorithms.
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </Grid>
-
-                          <Grid size={{ xs: 12, sm: 6 }}>
-                            <Box sx={{ p: 2, bgcolor: "background.default", border: "1px solid", borderColor: "divider", borderRadius: "4px", display: "flex", alignItems: "start", gap: 1.5 }}>
-                              <CheckCircle className="text-emerald-500 shrink-0 mt-0.5" size={16} />
-                              <Box>
-                                <Typography variant="subtitle2" sx={{ fontWeight: "bold", fontSize: "0.75rem" }}>
-                                  Clear Section Headers
-                                </Typography>
-                                <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 0.5 }}>
-                                  Uses standard titles to ensure accurate work history indexing.
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </Grid>
-
-                          <Grid size={{ xs: 12, sm: 6 }}>
-                            <Box sx={{ p: 2, bgcolor: "background.default", border: "1px solid", borderColor: "divider", borderRadius: "4px", display: "flex", alignItems: "start", gap: 1.5 }}>
-                              <CheckCircle className="text-emerald-500 shrink-0 mt-0.5" size={16} />
-                              <Box>
-                                <Typography variant="subtitle2" sx={{ fontWeight: "bold", fontSize: "0.75rem" }}>
-                                  Standard Text Formats
-                                </Typography>
-                                <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 0.5 }}>
-                                  Utilizes standard system fonts (Times, Arial, Garamond) safely.
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </Grid>
-
-                          <Grid size={{ xs: 12, sm: 6 }}>
-                            <Box sx={{ p: 2, bgcolor: "background.default", border: "1px solid", borderColor: "divider", borderRadius: "4px", display: "flex", alignItems: "start", gap: 1.5 }}>
-                              <CheckCircle className="text-emerald-500 shrink-0 mt-0.5" size={16} />
-                              <Box>
-                                <Typography variant="subtitle2" sx={{ fontWeight: "bold", fontSize: "0.75rem" }}>
-                                  Plain Content Hierarchy
-                                </Typography>
-                                <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 0.5 }}>
-                                  Maintains standard margins and breaks lines cleanly.
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </Grid>
-                        </Grid>
-
-                        <Stack spacing={2}>
-                          <Typography variant="caption" sx={{ fontWeight: 900, textTransform: "uppercase", color: "text.secondary", letterSpacing: "1px" }}>
-                            Recommended Revisions
-                          </Typography>
-                          <Stack spacing={1.5}>
-                            {resumeData.atsFeedback.map((tip, index) => (
-                              <Box key={index} sx={{ display: "flex", alignItems: "start", gap: 1.5 }}>
-                                <AlertTriangle className="text-amber-500 shrink-0 mt-0.5" size={14} />
-                                <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.75rem" }}>
-                                  {tip}
-                                </Typography>
-                              </Box>
-                            ))}
-                          </Stack>
-                        </Stack>
-                      </Paper>
-                    </Grid>
-
-                  </Grid>
-
-                  {/* Keyword Optimization */}
-                  <Paper sx={{ p: 4 }}>
-                    <Box sx={{ mb: 3 }}>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 850 }}>
-                        Target Keyword Alignment Density
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                        Make sure these key terms are present inside your experience section or core competencies header.
-                      </Typography>
-                    </Box>
-                    <Grid container spacing={2}>
-                      {resumeData.keywords.map((word, idx) => (
-                        <Grid size={{ xs: 6, sm: 3 }} key={idx}>
-                          <Paper sx={{ p: 2, bgcolor: "background.default", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                            <Typography variant="body2" sx={{ fontWeight: "bold", color: "text.primary" }}>
-                              {word}
-                            </Typography>
-                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 2, pt: 1, borderTop: "1px solid", borderColor: "divider" }}>
-                              <Typography variant="caption" sx={{ color: "emerald.600", fontWeight: "bold", fontSize: "9px" }}>
-                                MATCHED
-                              </Typography>
-                              <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "emerald.500" }} />
-                            </Box>
-                          </Paper>
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </Paper>
-
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </Container>
-        </Box>
-
-        {/* Footer */}
-        <Box component="footer" sx={{ bgcolor: "primary.main", borderTop: "1px solid", borderColor: "slate.800", py: 4, mt: "auto" }} className="print:hidden">
-          <Container maxWidth="lg">
-            <Typography variant="caption" sx={{ color: "slate.400", display: "block", textAlign: "center", letterSpacing: "0.5px" }}>
-              © 2026 ResuMatrix AI Pro platform. Fully machine-readable, single-column formatted CVs optimized for automated screeners.
-            </Typography>
-          </Container>
-        </Box>
-
-      </Box>
-    </ThemeProvider>
+        </AnimatePresence>
+      </main>
+    </div>
   );
 }
