@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { SearchParams, TemplateStyle } from "../types";
-import { Sparkles, Sliders, Briefcase, Tag, Target, RefreshCw } from "lucide-react";
+import { Sliders, Tag, Target, RefreshCw, Star } from "lucide-react";
 
 interface ResumeFormProps {
   params: SearchParams;
@@ -30,149 +30,147 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
   };
 
   return (
-    <div className="bg-[#2D1B4E]/80 backdrop-blur border-8 border-[#FF3AF2] rounded-3xl p-8 shadow-multi relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-full pattern-dots opacity-10 pointer-events-none" />
-      
-      <div className="relative z-10">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="bg-[#FFE600] p-3 rounded-xl border-4 border-[#00F5D4] rotate-3 shadow-[4px_4px_0_#FF3AF2]">
-            <Sliders size={28} className="text-[#0D0D1A]" />
-          </div>
-          <h2 className="font-heading font-black text-4xl uppercase text-shadow-single">
-            Target <span className="text-[#00F5D4]">Parameters</span>
-          </h2>
+    <div className="card-neo p-8 bg-neo-secondary/20 relative overflow-hidden -rotate-1">
+      <div className="absolute top-0 right-0 p-4">
+        <Star size={32} strokeWidth={3} className="text-neo-accent" />
+      </div>
+
+      <div className="flex items-center gap-3 mb-8">
+        <div className="bg-neo-accent p-2 border-4 border-black shadow-neo-sm rotate-3">
+          <Sliders size={28} strokeWidth={3} className="text-white" />
         </div>
+        <h2 className="font-heading font-black text-4xl uppercase">
+          Target Job
+        </h2>
+      </div>
 
-        {/* Scan Resume Button */}
-        <div className="mb-8">
-          <p className="font-bold text-[#FF6B35] uppercase mb-2">Have an existing resume?</p>
-          <button
-            onClick={() => setIsDialogOpen(true)}
-            className="w-full py-4 px-6 border-4 border-dashed border-[#00F5D4] text-white font-black uppercase rounded-2xl hover:bg-[#00F5D4] hover:text-[#0D0D1A] hover:border-solid hover:-translate-y-1 transition-all flex items-center justify-center gap-2"
-          >
-            <Tag size={20} /> Paste Raw Text to Auto-Fill
-          </button>
-        </div>
-
-        {/* Form Fields */}
-        <div className="space-y-6">
-          <div>
-            <label className="block font-bold text-[#FF3AF2] uppercase mb-2 flex items-center gap-2">
-              <Target size={16} /> Target Job Title
-            </label>
-            <input
-              type="text"
-              name="jobTitle"
-              value={params.jobTitle}
-              onChange={handleChange}
-              placeholder="e.g. Senior Software Engineer"
-              className="w-full bg-[#0D0D1A] border-4 border-[#00F5D4] rounded-xl px-4 py-3 text-white font-bold placeholder:text-white/30 focus:outline-none focus:ring-4 focus:ring-[#FF3AF2]/50 focus:border-[#FF3AF2] transition-all"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block font-bold text-[#FFE600] uppercase mb-2">Industry</label>
-              <input
-                type="text"
-                name="industry"
-                value={params.industry}
-                onChange={handleChange}
-                placeholder="e.g. Technology"
-                className="w-full bg-[#0D0D1A] border-4 border-[#00F5D4] rounded-xl px-4 py-3 text-white font-bold placeholder:text-white/30 focus:outline-none focus:ring-4 focus:ring-[#FFE600]/50 focus:border-[#FFE600] transition-all"
-              />
-            </div>
-            <div>
-              <label className="block font-bold text-[#00F5D4] uppercase mb-2">Experience Level</label>
-              <select
-                name="experienceLevel"
-                value={params.experienceLevel}
-                onChange={handleChange}
-                className="w-full bg-[#0D0D1A] border-4 border-[#00F5D4] rounded-xl px-4 py-3 text-white font-bold focus:outline-none focus:ring-4 focus:ring-[#FF3AF2]/50 transition-all appearance-none"
-              >
-                <option value="Entry-Level">Entry-Level (0-2 years)</option>
-                <option value="Mid-Level">Mid-Level (3-5 years)</option>
-                <option value="Senior-Level">Senior-Level (6-10 years)</option>
-                <option value="Executive-Level">Executive-Level (10+ years)</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block font-bold text-[#FF6B35] uppercase mb-2">Core Competencies / Skills</label>
-            <input
-              type="text"
-              name="currentSkills"
-              value={params.currentSkills}
-              onChange={handleChange}
-              placeholder="e.g. React, Node.js, Agile, Product Strategy"
-              className="w-full bg-[#0D0D1A] border-4 border-[#00F5D4] rounded-xl px-4 py-3 text-white font-bold placeholder:text-white/30 focus:outline-none focus:ring-4 focus:ring-[#FF6B35]/50 focus:border-[#FF6B35] transition-all"
-            />
-          </div>
-
-          <div>
-            <label className="block font-bold text-white uppercase mb-2">Custom Instructions / Context</label>
-            <textarea
-              name="additionalContext"
-              value={params.additionalContext}
-              onChange={handleChange}
-              rows={3}
-              placeholder="e.g. Emphasize my leadership experience and recent AWS certification."
-              className="w-full bg-[#0D0D1A] border-4 border-[#00F5D4] rounded-xl px-4 py-3 text-white font-bold placeholder:text-white/30 focus:outline-none focus:ring-4 focus:ring-[#FF3AF2]/50 focus:border-[#FF3AF2] transition-all"
-            />
-          </div>
-        </div>
-
-        {/* Generate Button */}
+      {/* Scan Resume Button */}
+      <div className="mb-8">
+        <p className="font-bold uppercase mb-2">Have an existing resume?</p>
         <button
-          onClick={onGenerate}
-          disabled={!params.jobTitle || isGenerating}
-          className="w-full mt-8 bg-gradient-to-r from-[#FF3AF2] via-[#7B2FFF] to-[#00F5D4] border-4 border-[#FFE600] rounded-full py-4 text-xl font-black uppercase text-white shadow-multi hover:scale-105 active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-3 glow-accent"
+          onClick={() => setIsDialogOpen(true)}
+          className="btn-neo w-full py-4 px-6 bg-white text-black hover:bg-neo-secondary flex items-center justify-center gap-2"
         >
-          {isGenerating ? <RefreshCw className="animate-spin" size={24} /> : <Sparkles size={24} />}
-          {isGenerating ? "Synthesizing Data..." : "Generate ATS Content"}
+          <Tag size={20} strokeWidth={3} /> PASTE RAW TEXT
         </button>
       </div>
 
-      {/* Parse Dialog Overlay (Tailwind modal) */}
+      {/* Form Fields */}
+      <div className="space-y-6">
+        <div>
+          <label className="block font-black uppercase mb-2 flex items-center gap-2">
+            <Target size={16} strokeWidth={3} /> Job Title
+          </label>
+          <input
+            type="text"
+            name="jobTitle"
+            value={params.jobTitle}
+            onChange={handleChange}
+            placeholder="e.g. Senior Software Engineer"
+            className="w-full bg-white border-4 border-black p-4 font-bold placeholder:text-black/40 focus:bg-neo-secondary focus:shadow-neo-sm focus:outline-none transition-colors"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block font-black uppercase mb-2">Industry</label>
+            <input
+              type="text"
+              name="industry"
+              value={params.industry}
+              onChange={handleChange}
+              placeholder="e.g. Technology"
+              className="w-full bg-white border-4 border-black p-4 font-bold placeholder:text-black/40 focus:bg-neo-muted focus:shadow-neo-sm focus:outline-none transition-colors"
+            />
+          </div>
+          <div>
+            <label className="block font-black uppercase mb-2">Experience</label>
+            <select
+              name="experienceLevel"
+              value={params.experienceLevel}
+              onChange={handleChange}
+              className="w-full bg-white border-4 border-black p-4 font-bold focus:bg-neo-accent focus:shadow-neo-sm focus:outline-none transition-colors appearance-none rounded-none"
+            >
+              <option value="Entry-Level">Entry-Level (0-2 years)</option>
+              <option value="Mid-Level">Mid-Level (3-5 years)</option>
+              <option value="Senior-Level">Senior-Level (6-10 years)</option>
+              <option value="Executive-Level">Executive-Level (10+ years)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="block font-black uppercase mb-2">Core Skills</label>
+          <input
+            type="text"
+            name="currentSkills"
+            value={params.currentSkills}
+            onChange={handleChange}
+            placeholder="e.g. React, Node.js, Agile"
+            className="w-full bg-white border-4 border-black p-4 font-bold placeholder:text-black/40 focus:bg-neo-secondary focus:shadow-neo-sm focus:outline-none transition-colors"
+          />
+        </div>
+
+        <div>
+          <label className="block font-black uppercase mb-2">Extra Context</label>
+          <textarea
+            name="additionalContext"
+            value={params.additionalContext}
+            onChange={handleChange}
+            rows={3}
+            placeholder="e.g. Emphasize my leadership..."
+            className="w-full bg-white border-4 border-black p-4 font-bold placeholder:text-black/40 focus:bg-neo-muted focus:shadow-neo-sm focus:outline-none transition-colors resize-none"
+          />
+        </div>
+      </div>
+
+      {/* Generate Button */}
+      <button
+        onClick={onGenerate}
+        disabled={!params.jobTitle || isGenerating}
+        className="btn-neo w-full mt-8 bg-neo-accent py-4 text-xl flex items-center justify-center gap-3 text-black disabled:opacity-50 disabled:bg-gray-300"
+      >
+        {isGenerating ? <RefreshCw className="animate-spin" size={24} strokeWidth={3} /> : <Star size={24} strokeWidth={3} />}
+        {isGenerating ? "GENERATING..." : "GENERATE ATS RESUME"}
+      </button>
+
+      {/* Parse Dialog Overlay */}
       {isDialogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0D0D1A]/80 backdrop-blur-sm">
-          <div className="bg-[#2D1B4E] border-8 border-[#00F5D4] rounded-3xl p-8 max-w-2xl w-full shadow-multi-lg relative pattern-checker overflow-hidden">
-            <div className="relative z-10">
-              <h2 className="font-heading text-4xl font-black uppercase text-shadow-single text-[#FF3AF2] mb-4">
-                Paste Your Resume
-              </h2>
-              <p className="text-white/80 font-bold mb-6">
-                Paste the text content of your existing resume. Our AI engine will analyze it and pre-fill the application fields.
-              </p>
-              
-              <textarea
-                value={resumeText}
-                onChange={(e) => setResumeText(e.target.value)}
-                rows={10}
-                className="w-full bg-[#0D0D1A] border-4 border-[#FFE600] rounded-xl p-4 text-white font-mono placeholder:text-white/30 focus:outline-none focus:ring-4 focus:ring-[#FF3AF2]/50 mb-6"
-                placeholder="Paste your text here..."
-              />
-              
-              <div className="flex justify-end gap-4">
-                <button 
-                  onClick={() => setIsDialogOpen(false)}
-                  className="px-6 py-3 font-bold uppercase text-white hover:bg-white/10 rounded-xl"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    onParseResume(resumeText);
-                    setIsDialogOpen(false);
-                  }}
-                  disabled={!resumeText.trim() || isParsing}
-                  className="px-8 py-3 bg-[#FF3AF2] border-4 border-[#00F5D4] font-black text-white uppercase rounded-xl hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center gap-2 shadow-[4px_4px_0_#FFE600]"
-                >
-                  {isParsing ? <RefreshCw className="animate-spin" size={20} /> : <Sparkles size={20} />}
-                  {isParsing ? "Analyzing..." : "Analyze & Import"}
-                </button>
-              </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neo-fg/80">
+          <div className="card-neo bg-neo-muted p-8 max-w-2xl w-full relative">
+            <h2 className="font-heading text-4xl font-black uppercase mb-4 text-stroke">
+              PASTE <span className="text-black" style={{ WebkitTextStroke: '0' }}>RESUME</span>
+            </h2>
+            <p className="font-bold mb-6">
+              Paste the text content of your existing resume. Our AI engine will analyze it and pre-fill the application fields.
+            </p>
+            
+            <textarea
+              value={resumeText}
+              onChange={(e) => setResumeText(e.target.value)}
+              rows={8}
+              className="w-full bg-white border-4 border-black p-4 font-bold placeholder:text-black/40 focus:bg-neo-secondary focus:shadow-neo-sm focus:outline-none transition-colors mb-6 resize-none"
+              placeholder="PASTE TEXT HERE..."
+            />
+            
+            <div className="flex justify-end gap-4">
+              <button 
+                onClick={() => setIsDialogOpen(false)}
+                className="btn-neo px-6 py-3 bg-white"
+              >
+                CANCEL
+              </button>
+              <button
+                onClick={() => {
+                  onParseResume(resumeText);
+                  setIsDialogOpen(false);
+                }}
+                disabled={!resumeText.trim() || isParsing}
+                className="btn-neo px-8 py-3 bg-neo-accent flex items-center gap-2 disabled:opacity-50"
+              >
+                {isParsing ? <RefreshCw className="animate-spin" size={20} strokeWidth={3} /> : <Star size={20} strokeWidth={3} />}
+                {isParsing ? "ANALYZING..." : "ANALYZE TEXT"}
+              </button>
             </div>
           </div>
         </div>

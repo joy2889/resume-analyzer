@@ -3,16 +3,9 @@ import { motion, AnimatePresence } from "motion/react";
 import { ResumeForm } from "./components/ResumeForm";
 import { ResumePreview } from "./components/ResumePreview";
 import { AIPanel } from "./components/AIPanel";
-import { TemplateMiniPreview } from "./components/TemplateMiniPreview";
-import { ResumeData, SearchParams, TemplateStyle, PersonalInfo } from "./types";
-import { 
-  FileText, Award, Layers, Sparkles, CheckCircle, TrendingUp, 
-  Grid as GridIcon, Sliders as SlidersIcon, ShieldCheck, 
-  BadgeCheck, FileCheck, AlertTriangle, Lightbulb, Scan, 
-  RefreshCw, FileBadge
-} from "lucide-react";
+import { TemplateStyle, ResumeData, SearchParams, PersonalInfo } from "./types";
+import { Star, GripVertical, FileText, Award, Sliders as SlidersIcon, Grid as GridIcon, Scan, RefreshCw } from "lucide-react";
 
-// (Keep the existing clientPresets exactly the same as before)
 const clientPresets: Record<string, ResumeData> = {
   software: {
     summary: "Innovative, performance-driven Software Engineer with over 5 years of experience architecting highly scalable full-stack applications. Proven expertise in React, Node.js, and cloud native architectures. Adept at driving rapid deployment schedules, refactoring monolithic legacy codebases into high-throughput microservices, and leading high-performing Agile sprint teams.",
@@ -97,7 +90,7 @@ const clientPresets: Record<string, ResumeData> = {
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<number>(1); 
+  const [activeTab, setActiveTab] = useState<number>(1);
 
   const selectTab = (newTab: number) => {
     if (newTab !== activeTab) {
@@ -107,8 +100,8 @@ export default function App() {
 
   const slideFadeVariants = {
     initial: { opacity: 0, y: 10 },
-    animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } },
-    exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: "easeIn" } }
+    animate: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "linear" } },
+    exit: { opacity: 0, y: -10, transition: { duration: 0.1, ease: "linear" } }
   };
 
   const [params, setParams] = useState<SearchParams>({
@@ -125,11 +118,11 @@ export default function App() {
   const [resumeData, setResumeData] = useState<ResumeData>(clientPresets.default);
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
     name: "Alex Johnson",
-    contact: "New York, NY 10001 | (555) 123-4567 | alex.johnson@email.com | linkedin.com/in/alexj",
-    degree: "Bachelor of Science in Business Administration",
+    contact: "New York, NY 10001 | (555) 123-4567 | alex.johnson@email.com",
+    degree: "B.S. in Computer Science",
     school: "State University",
     gradDate: "May 2018",
-    gpa: "GPA: 3.8 / 4.0",
+    gpa: "3.8 / 4.0",
     company1: "Global Innovations Inc.",
     dates1: "Jan 2021 - Present",
     role1: "Lead Innovator",
@@ -141,6 +134,7 @@ export default function App() {
     bullet2_1: "Managed day-to-day operations and improved client retention rates by 22% over two years.",
     bullet2_2: "Developed comprehensive reporting dashboards that reduced data extraction time by 40 hours per month."
   });
+  
   const [atsScanning, setAtsScanning] = useState<boolean>(false);
   const [scanMessage, setScanMessage] = useState<string>("");
   const [isParsingResume, setIsParsingResume] = useState<boolean>(false);
@@ -177,25 +171,6 @@ export default function App() {
     }
   };
 
-  const handleQuickFill = (role: "software" | "marketing" | "healthcare" | "product") => {
-    const data = clientPresets[role];
-    setResumeData(data);
-    setParams({
-      jobTitle: role === "software" ? "Senior Software Engineer" 
-               : role === "marketing" ? "B2B Marketing Lead" 
-               : role === "healthcare" ? "Emergency Department Nurse" 
-               : "Lead Product Manager",
-      industry: role === "software" ? "Information Technology" 
-               : role === "marketing" ? "Marketing & Advertising" 
-               : role === "healthcare" ? "Healthcare & Medicine" 
-               : "Software as a Service (SaaS)",
-      experienceLevel: role === "software" ? "Senior-Level" : "Mid-Level",
-      additionalContext: `Example template for ${role} role.`,
-      currentSkills: data.skills.slice(0, 4).join(", ")
-    });
-    setHasGenerated(true);
-  };
-
   const handleGenerate = async () => {
     if (!params.jobTitle) return;
 
@@ -217,24 +192,16 @@ export default function App() {
         const titleLower = params.jobTitle.toLowerCase();
         let fallbackData = clientPresets.default;
 
-        if (titleLower.includes("software") || titleLower.includes("engineer") || titleLower.includes("developer")) fallbackData = clientPresets.software;
-        else if (titleLower.includes("marketing") || titleLower.includes("brand") || titleLower.includes("seo")) fallbackData = clientPresets.marketing;
-        else if (titleLower.includes("nurse") || titleLower.includes("health") || titleLower.includes("medical")) fallbackData = clientPresets.healthcare;
-        else if (titleLower.includes("product") || titleLower.includes("manager") || titleLower.includes("pm")) fallbackData = clientPresets.product;
+        if (titleLower.includes("software") || titleLower.includes("engineer")) fallbackData = clientPresets.software;
+        else if (titleLower.includes("marketing") || titleLower.includes("seo")) fallbackData = clientPresets.marketing;
+        else if (titleLower.includes("nurse") || titleLower.includes("medical")) fallbackData = clientPresets.healthcare;
+        else if (titleLower.includes("product") || titleLower.includes("pm")) fallbackData = clientPresets.product;
 
         setResumeData(fallbackData);
         setHasGenerated(true);
       }
     } catch (err) {
-      const titleLower = params.jobTitle.toLowerCase();
-      let fallbackData = clientPresets.default;
-
-      if (titleLower.includes("software") || titleLower.includes("engineer") || titleLower.includes("developer")) fallbackData = clientPresets.software;
-      else if (titleLower.includes("marketing") || titleLower.includes("brand") || titleLower.includes("seo")) fallbackData = clientPresets.marketing;
-      else if (titleLower.includes("nurse") || titleLower.includes("health") || titleLower.includes("medical")) fallbackData = clientPresets.healthcare;
-      else if (titleLower.includes("product") || titleLower.includes("manager") || titleLower.includes("pm")) fallbackData = clientPresets.product;
-
-      setResumeData(fallbackData);
+      setResumeData(clientPresets.default);
       setHasGenerated(true);
     } finally {
       setIsGenerating(false);
@@ -243,149 +210,148 @@ export default function App() {
 
   const runAtsScan = () => {
     setAtsScanning(true);
-    setScanMessage("INITIALIZING ATS SCREENER SANDBOX...");
+    setScanMessage("BOOTING SCANNER...");
     setTimeout(() => {
-      setScanMessage("EXTRACTING TEXT & HIERARCHY...");
+      setScanMessage("READING KEYWORDS...");
       setTimeout(() => {
-        setScanMessage("RUNNING SEMANTIC KEYWORD-DENSITY ALGORITHMS...");
+        setScanMessage("ANALYZING FORMAT...");
         setTimeout(() => {
-          setScanMessage("VALIDATING GUIDELINES...");
-          setTimeout(() => {
-            setAtsScanning(false);
-            setScanMessage("");
-          }, 600);
-        }, 600);
+          setAtsScanning(false);
+          setScanMessage("");
+        }, 500);
       }, 500);
     }, 500);
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0D1A] text-white overflow-x-hidden relative font-body pattern-dots selection:bg-[#FF3AF2] selection:text-white">
-      {/* Decorative Floating Shapes */}
-      <div className="absolute top-[10%] left-[5%] text-[#00F5D4] animate-float z-0">
-        <Sparkles size={64} className="opacity-80" />
-      </div>
-      <div className="absolute top-[40%] right-[5%] text-[#FF3AF2] animate-float-reverse z-0">
-        <Sparkles size={48} className="opacity-80" />
-      </div>
-      <div className="absolute top-[80%] left-[10%] text-[#FFE600] animate-wiggle z-0">
-        <Sparkles size={80} className="opacity-80" />
-      </div>
+    <div className="min-h-screen bg-neo-bg text-neo-fg font-body relative overflow-x-hidden pattern-halftone selection:bg-neo-secondary selection:text-black pb-20">
       
-      {/* Background Typography */}
-      <div className="absolute top-20 left-0 right-0 text-[12rem] md:text-[20rem] font-black text-[#FF3AF2]/5 pointer-events-none text-center select-none z-0">
+      {/* Decorative Neo-brutalist Elements */}
+      <div className="absolute top-10 left-10 text-neo-accent animate-spin-slow z-0">
+        <Star size={48} fill="currentColor" strokeWidth={3} className="drop-shadow-[4px_4px_0_#000]" />
+      </div>
+      <div className="absolute top-[30%] right-[10%] rotate-12 z-0">
+        <div className="bg-neo-secondary border-4 border-black font-black uppercase text-xl px-4 py-2 shadow-neo-sm transform -rotate-6">
+          100% RAW
+        </div>
+      </div>
+      <div className="absolute bottom-[20%] left-[5%] text-neo-muted animate-spin-slow z-0" style={{ animationDirection: 'reverse' }}>
+        <Star size={64} fill="currentColor" strokeWidth={3} className="drop-shadow-[6px_6px_0_#000]" />
+      </div>
+
+      <div className="absolute top-32 left-0 right-0 text-[10rem] md:text-[18rem] font-black text-black/5 pointer-events-none text-center select-none z-0 tracking-tighter leading-none -rotate-2">
         HIRED
       </div>
 
       {/* Navbar */}
-      <header className="sticky top-0 z-50 bg-[#2D1B4E]/90 backdrop-blur-md border-b-8 border-[#FF3AF2] shadow-multi">
+      <header className="sticky top-0 z-50 bg-neo-bg border-b-8 border-black shadow-neo-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-4 group">
-            <div className="w-14 h-14 bg-[#FFE600] border-4 border-[#00F5D4] rounded-xl flex items-center justify-center font-display text-2xl text-[#0D0D1A] shadow-[4px_4px_0_#FF3AF2] group-hover:rotate-6 transition-transform">
-              AI
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-neo-secondary border-4 border-black flex items-center justify-center font-black text-2xl text-black shadow-neo-sm rotate-3 hover:-rotate-3 transition-transform">
+              RMP
             </div>
-            <h1 className="font-heading font-black text-4xl uppercase tracking-tighter text-shadow-double">
-              ResuMatrix <span className="text-[#00F5D4]">Pro</span>
+            <h1 className="font-heading font-black text-3xl uppercase tracking-tighter text-stroke">
+              ResuMatrix <span className="text-black" style={{ WebkitTextStroke: '0' }}>Pro</span>
             </h1>
           </div>
           
-          <nav className="flex gap-2 p-2 bg-[#0D0D1A] border-4 border-[#FF6B35] rounded-full shadow-[4px_4px_0_#7B2FFF]">
+          <nav className="flex gap-2 p-1 bg-white border-4 border-black shadow-neo-sm">
             <button 
               onClick={() => selectTab(0)} 
-              className={`px-6 py-3 rounded-full font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 ${activeTab === 0 ? 'bg-[#FF3AF2] text-white border-2 border-[#00F5D4] glow-accent' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+              className={`px-4 py-2 font-bold uppercase tracking-wider transition-all duration-100 flex items-center gap-2 ${activeTab === 0 ? 'bg-neo-accent text-black border-4 border-black shadow-neo-sm -translate-y-1' : 'bg-transparent text-black border-4 border-transparent hover:bg-gray-100'}`}
             >
-              <GridIcon size={18} /> Templates
+              <GridIcon size={18} strokeWidth={3} /> Templates
             </button>
             <button 
               onClick={() => selectTab(1)} 
-              className={`px-6 py-3 rounded-full font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 ${activeTab === 1 ? 'bg-[#00F5D4] text-[#0D0D1A] border-2 border-[#FF3AF2] glow-accent' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+              className={`px-4 py-2 font-bold uppercase tracking-wider transition-all duration-100 flex items-center gap-2 ${activeTab === 1 ? 'bg-neo-secondary text-black border-4 border-black shadow-neo-sm -translate-y-1' : 'bg-transparent text-black border-4 border-transparent hover:bg-gray-100'}`}
             >
-              <SlidersIcon size={18} /> Editor
+              <SlidersIcon size={18} strokeWidth={3} /> Editor
             </button>
             <button 
               onClick={() => selectTab(2)} 
-              className={`px-6 py-3 rounded-full font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 ${activeTab === 2 ? 'bg-[#FFE600] text-[#0D0D1A] border-2 border-[#FF6B35] glow-accent' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+              className={`px-4 py-2 font-bold uppercase tracking-wider transition-all duration-100 flex items-center gap-2 ${activeTab === 2 ? 'bg-neo-muted text-black border-4 border-black shadow-neo-sm -translate-y-1' : 'bg-transparent text-black border-4 border-transparent hover:bg-gray-100'}`}
             >
-              <Award size={18} /> ATS Score
+              <Award size={18} strokeWidth={3} /> ATS
             </button>
           </nav>
         </div>
       </header>
 
       {/* Main Workspace */}
-      <main className="max-w-7xl mx-auto px-6 py-24 relative z-10">
+      <main className="max-w-7xl mx-auto px-6 py-16 md:py-24 relative z-10">
         <AnimatePresence mode="wait">
           
           {/* TAB 0: TEMPLATES */}
           {activeTab === 0 && (
-            <motion.div key="tab-0" variants={slideFadeVariants} initial="initial" animate="animate" exit="exit" className="space-y-12">
-              <div className="text-center max-w-4xl mx-auto mb-16">
-                <h2 className="font-heading font-black text-6xl md:text-8xl uppercase tracking-tighter text-shadow-triple mb-6">
-                  CHOOSE YOUR <span className="text-gradient">WEAPON</span>
+            <motion.div key="tab-0" variants={slideFadeVariants} initial="initial" animate="animate" exit="exit" className="space-y-16">
+              <div className="text-center max-w-4xl mx-auto relative">
+                <div className="inline-block bg-neo-accent text-black font-black uppercase tracking-widest px-4 py-1 border-4 border-black shadow-neo-sm -rotate-2 mb-6">
+                  Select Base
+                </div>
+                <h2 className="font-heading font-black text-6xl md:text-8xl uppercase tracking-tighter leading-none mb-8 text-stroke">
+                  CHOOSE YOUR <span className="text-black" style={{ WebkitTextStroke: '0' }}>WEAPON</span>
                 </h2>
-                <p className="text-xl md:text-2xl text-white/80 font-bold max-w-2xl mx-auto border-4 border-dashed border-[#00F5D4] p-6 rounded-3xl bg-[#2D1B4E]/50 backdrop-blur">
-                  Professionally tuned single-column layouts. No boring graphics, just pure ATS-crushing structural power.
-                </p>
               </div>
 
               {/* Quick Scan Widget */}
-              <div className="bg-[#2D1B4E]/80 backdrop-blur-md border-4 border-[#FF6B35] rounded-3xl p-8 md:p-12 shadow-multi max-w-3xl mx-auto transform hover:-translate-y-2 transition-transform duration-300">
-                <h3 className="font-heading text-4xl font-black uppercase text-shadow-double flex items-center gap-4 mb-4 text-[#FFE600]">
-                  <Scan size={36} className="animate-pulse" /> QUICK SCAN EXISTING RESUME
+              <div className="card-neo p-8 md:p-12 max-w-3xl mx-auto -rotate-1 bg-neo-muted/30">
+                <h3 className="font-heading text-4xl font-black uppercase mb-4 flex items-center gap-3">
+                  <Scan size={36} strokeWidth={3} /> QUICK SCAN
                 </h3>
-                <p className="text-lg text-white/80 mb-6 font-bold">
-                  Drop your raw text here. Our AI will analyze the dopamine right out of it and pre-fill the editor for maximum impact!
+                <p className="text-lg font-bold mb-6">
+                  Paste raw text to auto-fill the editor. Stop wasting time typing.
                 </p>
                 <div className="space-y-4">
                   <textarea 
                     value={resumeText}
                     onChange={(e) => setResumeText(e.target.value)}
-                    className="w-full bg-[#0D0D1A] border-4 border-[#00F5D4] rounded-2xl p-6 text-xl text-white font-mono placeholder:text-white/30 focus:outline-none focus:ring-4 focus:ring-[#FF3AF2]/50 focus:border-[#FF3AF2] transition-all min-h-[150px]"
-                    placeholder="Paste your raw text here..."
+                    className="w-full bg-white border-4 border-black p-4 text-lg font-bold placeholder:text-black/40 focus:bg-neo-secondary focus:shadow-neo-sm focus:outline-none transition-all min-h-[120px] resize-none"
+                    placeholder="PASTE RAW RESUME TEXT HERE..."
                   />
                   <button 
                     onClick={() => { handleParseResume(resumeText); selectTab(1); }}
                     disabled={isParsingResume || !resumeText.trim()}
-                    className="w-full bg-gradient-to-r from-[#FF3AF2] via-[#7B2FFF] to-[#00F5D4] text-white font-black uppercase tracking-widest text-xl h-16 rounded-full border-4 border-[#FFE600] shadow-multi hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 glow-accent"
+                    className="btn-neo w-full bg-neo-accent text-black h-16 text-xl flex items-center justify-center gap-3 disabled:opacity-50 disabled:active:translate-x-0 disabled:active:translate-y-0 disabled:active:shadow-neo-md"
                   >
-                    {isParsingResume ? <RefreshCw className="animate-spin" size={24} /> : <Sparkles size={24} />}
-                    {isParsingResume ? "EXTRACTING AWESOMENESS..." : "AUTO-FILL RESUME"}
+                    {isParsingResume ? <RefreshCw className="animate-spin" size={24} strokeWidth={3} /> : <Scan size={24} strokeWidth={3} />}
+                    {isParsingResume ? "EXTRACTING..." : "AUTO-FILL"}
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                 {/* Traditional */}
-                <div className={`bg-[#2D1B4E]/80 border-8 rounded-3xl p-8 flex flex-col justify-between shadow-multi transform transition-all duration-300 hover:rotate-1 hover:scale-105 ${templateStyle === "ats-traditional" ? 'border-[#00F5D4]' : 'border-[#FF3AF2]'}`}>
+                <div className={`card-neo p-8 flex flex-col justify-between ${templateStyle === "ats-traditional" ? 'bg-neo-secondary -translate-y-2 shadow-neo-xl' : 'bg-white'}`}>
                   <div className="mb-8">
-                    <h3 className="font-heading text-4xl font-black uppercase mb-2">Traditional Classic</h3>
-                    <div className="inline-block bg-[#FFE600] text-[#0D0D1A] px-4 py-1 font-bold uppercase rounded-full mb-4 border-2 border-[#FF3AF2] rotate-2">
+                    <h3 className="font-heading text-4xl font-black uppercase mb-4">Classic</h3>
+                    <div className="inline-block bg-white text-black px-3 py-1 font-bold uppercase border-4 border-black shadow-neo-sm rotate-2 mb-4">
                       Times New Roman
                     </div>
-                    <p className="text-lg opacity-80 font-medium">Recommended by recruiters. Employs timeless styling designed to read with 100% accuracy on older systems.</p>
+                    <p className="text-lg font-bold">100% parser-safe. Boring look, maximum hire probability on ancient ATS systems.</p>
                   </div>
                   <button 
                     onClick={() => { setTemplateStyle("ats-traditional"); selectTab(1); }}
-                    className={`h-14 rounded-full font-black uppercase tracking-widest border-4 transition-all ${templateStyle === "ats-traditional" ? 'bg-[#00F5D4] text-[#0D0D1A] border-[#FF3AF2]' : 'bg-transparent text-white border-dashed border-[#FF3AF2] hover:bg-[#FF3AF2] hover:border-solid'}`}
+                    className={`btn-neo h-14 ${templateStyle === "ats-traditional" ? 'bg-white text-black' : 'bg-neo-secondary text-black'}`}
                   >
-                    {templateStyle === "ats-traditional" ? "SELECTED & EDIT" : "SELECT TRADITIONAL"}
+                    {templateStyle === "ats-traditional" ? "SELECTED (EDIT NOW)" : "SELECT CLASSIC"}
                   </button>
                 </div>
                 
                 {/* Modern */}
-                <div className={`bg-[#2D1B4E]/80 border-8 rounded-3xl p-8 flex flex-col justify-between shadow-multi transform transition-all duration-300 hover:-rotate-1 hover:scale-105 ${templateStyle === "ats-modern" ? 'border-[#FF6B35]' : 'border-[#00F5D4]'}`}>
+                <div className={`card-neo p-8 flex flex-col justify-between ${templateStyle === "ats-modern" ? 'bg-neo-accent -translate-y-2 shadow-neo-xl' : 'bg-white'}`}>
                   <div className="mb-8">
-                    <h3 className="font-heading text-4xl font-black uppercase mb-2">Modern Pro</h3>
-                    <div className="inline-block bg-[#FF3AF2] text-white px-4 py-1 font-bold uppercase rounded-full mb-4 border-2 border-[#FFE600] -rotate-2">
-                      Arial Sans-Serif
+                    <h3 className="font-heading text-4xl font-black uppercase mb-4">Modern</h3>
+                    <div className="inline-block bg-white text-black px-3 py-1 font-bold uppercase border-4 border-black shadow-neo-sm -rotate-2 mb-4">
+                      Arial
                     </div>
-                    <p className="text-lg opacity-80 font-medium">Clean structure for tech ecosystems. Delivers modern spacing with standard font for safe readability.</p>
+                    <p className="text-lg font-bold">Clean structure. Better spacing. Safe for modern tech ecosystems.</p>
                   </div>
                   <button 
                     onClick={() => { setTemplateStyle("ats-modern"); selectTab(1); }}
-                    className={`h-14 rounded-full font-black uppercase tracking-widest border-4 transition-all ${templateStyle === "ats-modern" ? 'bg-[#FF6B35] text-white border-[#FFE600]' : 'bg-transparent text-white border-dashed border-[#00F5D4] hover:bg-[#00F5D4] hover:text-[#0D0D1A] hover:border-solid'}`}
+                    className={`btn-neo h-14 ${templateStyle === "ats-modern" ? 'bg-white text-black' : 'bg-neo-accent text-black'}`}
                   >
-                    {templateStyle === "ats-modern" ? "SELECTED & EDIT" : "SELECT MODERN"}
+                    {templateStyle === "ats-modern" ? "SELECTED (EDIT NOW)" : "SELECT MODERN"}
                   </button>
                 </div>
               </div>
@@ -395,8 +361,8 @@ export default function App() {
           {/* TAB 1: EDITOR */}
           {activeTab === 1 && (
             <motion.div key="tab-1" variants={slideFadeVariants} initial="initial" animate="animate" exit="exit">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                <div className="lg:col-span-5 flex flex-col gap-8">
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+                <div className="xl:col-span-5 flex flex-col gap-8">
                   <ResumeForm
                     params={params}
                     setParams={setParams}
@@ -412,9 +378,8 @@ export default function App() {
                     resumeData={resumeData}
                   />
                 </div>
-                <div className="lg:col-span-7 sticky top-32 z-20">
-                  <div className="bg-[#2D1B4E]/80 backdrop-blur-md border-8 border-[#00F5D4] rounded-3xl p-4 md:p-8 shadow-multi-lg relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-full pattern-stripes opacity-10 pointer-events-none" />
+                <div className="xl:col-span-7 sticky top-32 z-20">
+                  <div className="card-neo p-4 md:p-8 bg-neo-muted/20 rotate-1">
                     <ResumePreview
                       data={resumeData}
                       setData={setResumeData}
@@ -433,44 +398,45 @@ export default function App() {
           {activeTab === 2 && (
             <motion.div key="tab-2" variants={slideFadeVariants} initial="initial" animate="animate" exit="exit" className="max-w-4xl mx-auto space-y-8">
               
-              <div className="bg-[#2D1B4E]/90 border-8 border-[#FF3AF2] rounded-3xl p-10 md:p-16 shadow-multi text-center relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-full pattern-checker opacity-10 pointer-events-none" />
-                <h2 className="font-heading text-6xl font-black uppercase text-shadow-double mb-8 z-10 relative">
-                  ATS <span className="text-[#FFE600]">SCORECARD</span>
+              <div className="card-neo p-10 md:p-16 text-center bg-neo-secondary">
+                <div className="inline-block bg-neo-accent border-4 border-black shadow-neo-sm px-4 py-1 font-black uppercase tracking-widest rotate-3 mb-6">
+                  Analysis Complete
+                </div>
+                <h2 className="font-heading text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none mb-12">
+                  SCORECARD
                 </h2>
 
                 {atsScanning ? (
-                  <div className="space-y-6 flex flex-col items-center">
-                    <Scan className="animate-spin text-[#00F5D4]" size={80} />
-                    <p className="text-3xl font-bold uppercase text-[#FF6B35] animate-pulse">{scanMessage}</p>
-                    <div className="w-full bg-[#0D0D1A] h-4 rounded-full border-2 border-[#FF3AF2] overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-[#FF3AF2] to-[#00F5D4] w-1/2 animate-pulse rounded-full" />
-                    </div>
+                  <div className="space-y-6 flex flex-col items-center py-12">
+                    <Scan className="animate-spin text-black" size={80} strokeWidth={3} />
+                    <p className="text-3xl font-black uppercase">{scanMessage}</p>
                   </div>
                 ) : (
                   <div className="space-y-12">
                     <div className="flex flex-col md:flex-row items-center justify-center gap-12">
-                      <div className="w-48 h-48 bg-[#0D0D1A] rounded-full border-8 border-[#00F5D4] flex items-center justify-center shadow-[0_0_60px_rgba(0,245,212,0.4)] relative">
-                        <div className="absolute -top-4 -right-4 bg-[#FFE600] text-[#0D0D1A] font-black p-2 rounded-full border-4 border-[#FF3AF2] rotate-12">
-                          EXCELLENT!
+                      <div className="w-48 h-48 bg-white border-8 border-black rounded-full shadow-neo-md flex items-center justify-center relative">
+                        <div className="absolute -top-4 -right-4 bg-neo-accent text-white font-black p-2 border-4 border-black rotate-12 shadow-neo-sm uppercase">
+                          {resumeData.atsScore > 85 ? "LFG!" : "NEEDS WORK"}
                         </div>
-                        <span className="font-heading font-black text-7xl text-gradient">{resumeData.atsScore}</span>
+                        <span className="font-heading font-black text-7xl">{resumeData.atsScore}</span>
                       </div>
-                      <div className="text-left space-y-4">
-                        <h3 className="font-heading text-4xl font-black uppercase text-[#FF3AF2]">You're Ready.</h3>
-                        <p className="text-xl text-white/80 font-bold max-w-sm">This resume hits all the major keywords for <span className="text-[#00F5D4]">{params.jobTitle || 'your role'}</span>.</p>
+                      <div className="text-left space-y-2 max-w-sm">
+                        <h3 className="font-heading text-4xl font-black uppercase">Status:</h3>
+                        <p className="text-2xl font-bold">
+                          {resumeData.atsScore > 85 ? "You're ready to apply." : "Optimize keywords before sending."}
+                        </p>
                       </div>
                     </div>
 
-                    <div className="text-left bg-[#0D0D1A]/50 rounded-2xl p-8 border-4 border-[#FF6B35]">
-                      <h4 className="font-heading text-2xl font-black uppercase mb-6 flex items-center gap-3 text-[#FFE600]">
-                        <Lightbulb size={28} /> AI Feedback Notes
+                    <div className="text-left bg-white border-4 border-black p-8 shadow-neo-sm rotate-1">
+                      <h4 className="font-heading text-2xl font-black uppercase mb-6 flex items-center gap-3">
+                        <Star size={28} strokeWidth={3} fill="currentColor" className="text-neo-secondary" /> AI Feedback
                       </h4>
-                      <ul className="space-y-4">
+                      <ul className="space-y-4 font-bold text-lg">
                         {resumeData.atsFeedback.map((feedback, idx) => (
                           <li key={idx} className="flex items-start gap-4">
-                            <CheckCircle className="text-[#00F5D4] shrink-0 mt-1" size={24} />
-                            <span className="text-lg font-medium">{feedback}</span>
+                            <div className="w-3 h-3 bg-neo-accent border-2 border-black mt-2 shrink-0 rounded-full" />
+                            <span>{feedback}</span>
                           </li>
                         ))}
                       </ul>
@@ -478,9 +444,9 @@ export default function App() {
 
                     <button 
                       onClick={runAtsScan}
-                      className="bg-transparent border-4 border-dashed border-[#00F5D4] text-white px-8 py-4 rounded-full font-black uppercase text-xl hover:bg-[#00F5D4] hover:text-[#0D0D1A] hover:border-solid transition-all"
+                      className="btn-neo bg-neo-muted text-black px-8 py-4 text-xl"
                     >
-                      RE-RUN FULL SCAN
+                      RE-RUN SCAN
                     </button>
                   </div>
                 )}
