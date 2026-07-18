@@ -1,0 +1,6 @@
+{
+  "name": "AI Resume Templates",
+  "description": "An ATS-optimized AI-powered resume builder that generates professional CV content, high-impact verbs, and industry keywords tailored to your target job role.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
