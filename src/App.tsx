@@ -140,17 +140,19 @@ export default function App() {
   const [isParsingResume, setIsParsingResume] = useState<boolean>(false);
   const [resumeText, setResumeText] = useState("");
 
-  const handleParseResume = async (textToParse: string) => {
-    if (!textToParse.trim()) return;
+  const handleParseResume = async (file: File) => {
     setIsParsingResume(true);
     setHasGenerated(false);
     
     try {
-      const response = await fetch("/api/parse-resume", {
+      const formData = new FormData();
+      formData.append("resumeFile", file);
+
+      const response = await fetch("/api/upload-resume", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ resumeText: textToParse }),
+        body: formData,
       });
+
       if (response.ok) {
         const parsed = await response.json();
         setParams({
@@ -163,6 +165,8 @@ export default function App() {
         if (parsed.resumeData) setResumeData(parsed.resumeData);
         if (parsed.personalInfo) setPersonalInfo(parsed.personalInfo);
         setHasGenerated(true);
+      } else {
+        console.error("Upload failed.");
       }
     } catch (err) {
       console.error("Failed to parse resume", err);
@@ -362,7 +366,7 @@ export default function App() {
           {activeTab === 1 && (
             <motion.div key="tab-1" variants={slideFadeVariants} initial="initial" animate="animate" exit="exit">
               <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
-                <div className="xl:col-span-5 flex flex-col gap-8">
+                <div className="xl:col-span-5 flex flex-col gap-8 editor-sidebar">
                   <ResumeForm
                     params={params}
                     setParams={setParams}
@@ -378,7 +382,7 @@ export default function App() {
                     resumeData={resumeData}
                   />
                 </div>
-                <div className="xl:col-span-7 sticky top-32 z-20">
+                <div className="xl:col-span-7 sticky top-32 z-20 preview-sidebar">
                   <div className="card-neo p-4 md:p-8 bg-neo-muted/20 rotate-1">
                     <ResumePreview
                       data={resumeData}

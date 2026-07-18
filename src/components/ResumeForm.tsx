@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { SearchParams, TemplateStyle } from "../types";
-import { Sliders, Tag, Target, RefreshCw, Star } from "lucide-react";
+import { Sliders, Tag, Target, RefreshCw, Star, Upload } from "lucide-react";
 
 interface ResumeFormProps {
   params: SearchParams;
@@ -10,7 +10,7 @@ interface ResumeFormProps {
   isGenerating: boolean;
   onGenerate: () => void;
   isParsing: boolean;
-  onParseResume: (text: string) => void;
+  onParseResume: (file: File) => void;
 }
 
 export const ResumeForm: React.FC<ResumeFormProps> = ({
@@ -22,7 +22,7 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
   onParseResume,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [resumeText, setResumeText] = useState("");
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -44,14 +44,14 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
         </h2>
       </div>
 
-      {/* Scan Resume Button */}
+      {/* Upload Resume Button */}
       <div className="mb-8">
         <p className="font-bold uppercase mb-2">Have an existing resume?</p>
         <button
           onClick={() => setIsDialogOpen(true)}
           className="btn-neo w-full py-4 px-6 bg-white text-black hover:bg-neo-secondary flex items-center justify-center gap-2"
         >
-          <Tag size={20} strokeWidth={3} /> PASTE RAW TEXT
+          <Upload size={20} strokeWidth={3} /> UPLOAD RESUME
         </button>
       </div>
 
@@ -134,42 +134,54 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
         {isGenerating ? "GENERATING..." : "GENERATE ATS RESUME"}
       </button>
 
-      {/* Parse Dialog Overlay */}
+      {/* Upload Dialog Overlay */}
       {isDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neo-fg/80">
           <div className="card-neo bg-neo-muted p-8 max-w-2xl w-full relative">
             <h2 className="font-heading text-4xl font-black uppercase mb-4 text-stroke">
-              PASTE <span className="text-black" style={{ WebkitTextStroke: '0' }}>RESUME</span>
+              UPLOAD <span className="text-black" style={{ WebkitTextStroke: '0' }}>RESUME</span>
             </h2>
             <p className="font-bold mb-6">
-              Paste the text content of your existing resume. Our AI engine will analyze it and pre-fill the application fields.
+              Upload your existing resume (PDF or TXT). Our AI engine will analyze it and pre-fill the application fields.
             </p>
             
-            <textarea
-              value={resumeText}
-              onChange={(e) => setResumeText(e.target.value)}
-              rows={8}
-              className="w-full bg-white border-4 border-black p-4 font-bold placeholder:text-black/40 focus:bg-neo-secondary focus:shadow-neo-sm focus:outline-none transition-colors mb-6 resize-none"
-              placeholder="PASTE TEXT HERE..."
-            />
+            <div className="relative mb-6 group cursor-pointer border-4 border-dashed border-black bg-white p-8 text-center hover:bg-neo-secondary transition-colors h-40 flex flex-col justify-center items-center">
+              <input 
+                type="file" 
+                accept=".pdf,.txt"
+                onChange={(e) => {
+                   if (e.target.files && e.target.files[0]) {
+                     setResumeFile(e.target.files[0]);
+                   }
+                }}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+              <Upload size={32} strokeWidth={3} className="mb-2" />
+              <span className="font-bold text-lg">
+                {resumeFile ? resumeFile.name : "DRAG AND DROP OR CLICK TO BROWSE"}
+              </span>
+            </div>
             
             <div className="flex justify-end gap-4">
               <button 
-                onClick={() => setIsDialogOpen(false)}
+                onClick={() => { setIsDialogOpen(false); setResumeFile(null); }}
                 className="btn-neo px-6 py-3 bg-white"
               >
                 CANCEL
               </button>
               <button
                 onClick={() => {
-                  onParseResume(resumeText);
-                  setIsDialogOpen(false);
+                  if (resumeFile) {
+                    onParseResume(resumeFile);
+                    setIsDialogOpen(false);
+                    setResumeFile(null);
+                  }
                 }}
-                disabled={!resumeText.trim() || isParsing}
+                disabled={!resumeFile || isParsing}
                 className="btn-neo px-8 py-3 bg-neo-accent flex items-center gap-2 disabled:opacity-50"
               >
                 {isParsing ? <RefreshCw className="animate-spin" size={20} strokeWidth={3} /> : <Star size={20} strokeWidth={3} />}
-                {isParsing ? "ANALYZING..." : "ANALYZE TEXT"}
+                {isParsing ? "ANALYZING..." : "ANALYZE RESUME"}
               </button>
             </div>
           </div>

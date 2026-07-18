@@ -69,3 +69,66 @@ body {
     transition-duration: 0.15s !important;
   }
 }
+
+@media print {
+  @page {
+    margin: 0;
+    size: auto;
+  }
+  body, html {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  header, .print\:hidden, nav, .lucide {
+    display: none !important;
+  }
+  .card-neo {
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+    background: transparent !important;
+  }
+  .min-h-screen {
+    min-height: auto !important;
+  }
+  .max-w-7xl {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  /* Specifically target the preview container */
+  .resume-print-container {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 2cm !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  /* Hide editor form */
+  .editor-sidebar {
+    display: none !important;
+  }
+  .preview-sidebar {
+    position: static !important;
+    width: 100% !important;
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+  /* Input fields should look like normal text on print */
+  input, textarea {
+    border: none !important;
+    background: transparent !important;
+    resize: none !important;
+    box-shadow: none !important;
+  }
+  /* Remove placeholder text when printing */
+  ::-webkit-input-placeholder { color: transparent; }
+  :-moz-placeholder { color: transparent; }
+  ::-moz-placeholder { color: transparent; }
+  :-ms-input-placeholder { color: transparent; }
+}

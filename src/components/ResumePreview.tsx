@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import TextareaAutosize from "react-textarea-autosize";
 import { ResumeData, TemplateStyle, PersonalInfo } from "../types";
 import { Printer, Edit3, Sparkles, CheckCircle } from "lucide-react";
 
@@ -58,7 +59,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
       </div>
 
       {/* Actual Resume Page */}
-      <div className="bg-white text-black p-8 md:p-12 border-4 border-black shadow-neo-lg mx-auto w-full max-w-4xl" style={{ minHeight: "1056px", fontFamily: isModern ? 'Arial, sans-serif' : '"Times New Roman", Times, serif' }}>
+      <div className="bg-white text-black p-8 md:p-12 border-4 border-black shadow-neo-lg mx-auto w-full max-w-4xl resume-print-container" style={{ minHeight: "1056px", fontFamily: isModern ? 'Arial, sans-serif' : '"Times New Roman", Times, serif' }}>
         
         {/* HEADER SECTION */}
         <div className={`mb-6 border-b-4 border-black pb-4 ${isModern ? 'text-left' : 'text-center'}`}>
@@ -79,10 +80,10 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
         {/* SUMMARY SECTION */}
         <div className="mb-6">
           <h3 className="font-bold text-lg uppercase tracking-wider mb-2 border-b-2 border-black">Professional Summary</h3>
-          <textarea
+          <TextareaAutosize
             value={data.summary}
             onChange={(e) => handleDataChange("summary", e.target.value)}
-            rows={4}
+            
             className="w-full bg-transparent text-sm leading-relaxed focus:outline-none focus:bg-neo-secondary/30 p-1 resize-none"
           />
         </div>
@@ -144,26 +145,26 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
             
             <ul className="list-disc pl-5 space-y-2 text-sm">
               <li>
-                <textarea
+                <TextareaAutosize
                   value={data.b1}
                   onChange={(e) => handleDataChange("b1", e.target.value)}
-                  rows={2}
+                  
                   className="w-full bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 resize-none"
                 />
               </li>
               <li>
-                <textarea
+                <TextareaAutosize
                   value={data.b2}
                   onChange={(e) => handleDataChange("b2", e.target.value)}
-                  rows={2}
+                  
                   className="w-full bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 resize-none"
                 />
               </li>
               <li>
-                <textarea
+                <TextareaAutosize
                   value={data.b3}
                   onChange={(e) => handleDataChange("b3", e.target.value)}
-                  rows={2}
+                  
                   className="w-full bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 resize-none"
                 />
               </li>
@@ -203,18 +204,18 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
             
             <ul className="list-disc pl-5 space-y-2 text-sm">
               <li>
-                <textarea
+                <TextareaAutosize
                   value={personalInfo.bullet2_1}
                   onChange={(e) => handleInfoChange("bullet2_1", e.target.value)}
-                  rows={2}
+                  
                   className="w-full bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 resize-none"
                 />
               </li>
               <li>
-                <textarea
+                <TextareaAutosize
                   value={personalInfo.bullet2_2}
                   onChange={(e) => handleInfoChange("bullet2_2", e.target.value)}
-                  rows={2}
+                  
                   className="w-full bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 resize-none"
                 />
               </li>
