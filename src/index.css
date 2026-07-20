@@ -1,73 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-heading: "Space Grotesk", sans-serif;
-  --font-body: "Space Grotesk", sans-serif;
-
-  --color-neo-bg: #FFFDF5;
-  --color-neo-fg: #000000;
-  --color-neo-accent: #FF6B6B;
-  --color-neo-secondary: #FFD93D;
-  --color-neo-muted: #C4B5FD;
-  --color-white: #FFFFFF;
-
-  --shadow-neo-sm: 4px 4px 0px 0px #000;
-  --shadow-neo-md: 8px 8px 0px 0px #000;
-  --shadow-neo-lg: 12px 12px 0px 0px #000;
-  --shadow-neo-xl: 16px 16px 0px 0px #000;
-  --shadow-neo-white: 8px 8px 0px 0px #fff;
-
-  --animate-spin-slow: spin-slow 10s linear infinite;
-}
-
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
 }
 
 @layer utilities {
-  .pattern-halftone {
-    background-image: radial-gradient(#000 1.5px, transparent 1.5px);
-    background-size: 20px 20px;
+  .glass-panel {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl;
   }
-  .pattern-grid {
-    background-size: 40px 40px;
-    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1) 2px, transparent 2px),
-                      linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 2px, transparent 2px);
+  .glow-text {
+    text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
   }
-  .text-stroke {
-    -webkit-text-stroke: 2px black;
-    color: transparent;
+  .input-lumina {
+    @apply w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all;
   }
-  
-  .btn-neo {
-    @apply border-4 border-black shadow-neo-md font-bold uppercase tracking-wide transition-all duration-100;
+  .btn-primary {
+    @apply bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl px-6 py-3 transition-all duration-300 shadow-[0_0_15px_rgba(79,70,229,0.4)] hover:shadow-[0_0_25px_rgba(79,70,229,0.6)] flex items-center justify-center gap-2;
   }
-  .btn-neo:active {
-    @apply translate-x-[4px] translate-y-[4px] shadow-none;
-  }
-  
-  .card-neo {
-    @apply border-4 border-black bg-white shadow-neo-lg transition-all duration-200;
-  }
-  .card-neo:hover {
-    @apply -translate-y-2 shadow-neo-xl;
+  .btn-secondary {
+    @apply bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl px-6 py-3 transition-all duration-300 border border-white/5 flex items-center justify-center gap-2;
   }
 }
 
 body {
-  background-color: var(--color-neo-bg);
-  color: var(--color-neo-fg);
-  font-family: var(--font-body);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.15s !important;
-  }
+  cursor: none;
+  @apply bg-[#030712] text-slate-200 antialiased selection:bg-indigo-500/30;
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.15), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15), transparent 25%);
+  background-attachment: fixed;
 }
 
 @media print {
@@ -83,7 +46,7 @@ body {
   header, .print\:hidden, nav, .lucide {
     display: none !important;
   }
-  .card-neo {
+  .glass-panel, .card-lumina {
     border: none !important;
     box-shadow: none !important;
     transform: none !important;
@@ -100,7 +63,6 @@ body {
     padding: 0 !important;
     margin: 0 !important;
   }
-  /* Specifically target the preview container */
   .resume-print-container {
     width: 100% !important;
     max-width: none !important;
@@ -108,8 +70,8 @@ body {
     padding: 2cm !important;
     border: none !important;
     box-shadow: none !important;
+    color: black !important;
   }
-  /* Hide editor form */
   .editor-sidebar {
     display: none !important;
   }
@@ -119,16 +81,21 @@ body {
     flex: 0 0 100% !important;
     max-width: 100% !important;
   }
-  /* Input fields should look like normal text on print */
   input, textarea {
     border: none !important;
     background: transparent !important;
     resize: none !important;
     box-shadow: none !important;
+    color: black !important;
   }
-  /* Remove placeholder text when printing */
   ::-webkit-input-placeholder { color: transparent; }
   :-moz-placeholder { color: transparent; }
   ::-moz-placeholder { color: transparent; }
   :-ms-input-placeholder { color: transparent; }
+}
+
+
+/* Hide default cursor globally for Lumina feel */
+* {
+  cursor: none !important;
 }

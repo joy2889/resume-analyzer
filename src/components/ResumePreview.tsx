@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { useReactToPrint } from "react-to-print";
 import TextareaAutosize from "react-textarea-autosize";
 import { ResumeData, TemplateStyle, PersonalInfo } from "../types";
 import { Printer, Edit3, Sparkles, CheckCircle } from "lucide-react";
@@ -28,22 +29,31 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
     setData(prev => ({ ...prev, [field]: val }));
   };
 
+  
+  const contentRef = useRef<HTMLDivElement>(null);
+  const reactToPrintFn = useReactToPrint({ contentRef });
+  
   const printDocument = () => {
-    window.print();
+    if (reactToPrintFn) {
+      reactToPrintFn();
+    } else {
+      window.print();
+    }
   };
+
 
   const isModern = templateStyle === "ats-modern";
 
   return (
     <div className="flex flex-col relative w-full h-full">
       {/* Top action bar - Neo-Brutalist Style */}
-      <div className="flex flex-col sm:flex-row justify-between items-center bg-white border-4 border-black p-4 mb-6 shadow-neo-sm print:hidden">
+      <div className="flex flex-col sm:flex-row justify-between items-center bg-white border border-white/10 p-4 mb-6 shadow-lg print:hidden">
         <div className="flex items-center gap-3 mb-4 sm:mb-0">
-          <div className="bg-neo-accent p-2 border-4 border-black shadow-neo-sm">
+          <div className="bg-indigo-600 p-2 border border-white/10 shadow-lg">
             <Edit3 size={24} strokeWidth={3} className="text-white" />
           </div>
           <div>
-            <h3 className="font-heading font-black text-2xl uppercase tracking-wider leading-none">
+            <h3 className="font-display font-bold text-2xl uppercase tracking-wider leading-none">
               Live Preview
             </h3>
             <p className="font-bold text-sm text-black/70">Click any text block below to edit instantly.</p>
@@ -52,45 +62,45 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
         
         <button 
           onClick={printDocument}
-          className="btn-neo bg-neo-secondary px-6 py-3 flex items-center gap-2"
+          className="btn-secondary bg-white/10 px-6 py-3 flex items-center gap-2"
         >
           <Printer size={20} strokeWidth={3} /> EXPORT PDF
         </button>
       </div>
 
       {/* Actual Resume Page */}
-      <div className="bg-white text-black p-8 md:p-12 border-4 border-black shadow-neo-lg mx-auto w-full max-w-4xl resume-print-container" style={{ minHeight: "1056px", fontFamily: isModern ? 'Arial, sans-serif' : '"Times New Roman", Times, serif' }}>
+      <div ref={contentRef} className="bg-white text-black p-8 md:p-12 border border-white/10 shadow-2xl mx-auto w-full max-w-4xl resume-print-container" style={{ minHeight: "1056px", fontFamily: isModern ? 'Arial, sans-serif' : '"Times New Roman", Times, serif' }}>
         
         {/* HEADER SECTION */}
-        <div className={`mb-6 border-b-4 border-black pb-4 ${isModern ? 'text-left' : 'text-center'}`}>
+        <div className={`mb-6 border-b border-white/10 pb-4 ${isModern ? 'text-left' : 'text-center'}`}>
           <input
             type="text"
             value={personalInfo.name}
             onChange={(e) => handleInfoChange("name", e.target.value)}
-            className={`w-full bg-transparent font-bold text-4xl focus:outline-none focus:bg-neo-secondary/30 p-1 ${isModern ? 'text-left' : 'text-center'}`}
+            className={`w-full bg-transparent font-bold text-4xl focus:outline-none focus:bg-gray-100 p-1 ${isModern ? 'text-left' : 'text-center'}`}
           />
           <input
             type="text"
             value={personalInfo.contact}
             onChange={(e) => handleInfoChange("contact", e.target.value)}
-            className={`w-full bg-transparent text-sm mt-1 focus:outline-none focus:bg-neo-secondary/30 p-1 ${isModern ? 'text-left' : 'text-center'}`}
+            className={`w-full bg-transparent text-sm mt-1 focus:outline-none focus:bg-gray-100 p-1 ${isModern ? 'text-left' : 'text-center'}`}
           />
         </div>
 
         {/* SUMMARY SECTION */}
         <div className="mb-6">
-          <h3 className="font-bold text-lg uppercase tracking-wider mb-2 border-b-2 border-black">Professional Summary</h3>
+          <h3 className="font-bold text-lg uppercase tracking-wider mb-2 border-b border-white/10">Professional Summary</h3>
           <TextareaAutosize
             value={data.summary}
             onChange={(e) => handleDataChange("summary", e.target.value)}
             
-            className="w-full bg-transparent text-sm leading-relaxed focus:outline-none focus:bg-neo-secondary/30 p-1 resize-none"
+            className="w-full bg-transparent text-sm leading-relaxed focus:outline-none focus:bg-gray-100 p-1 resize-none"
           />
         </div>
 
         {/* CORE COMPETENCIES SECTION */}
         <div className="mb-6">
-          <h3 className="font-bold text-lg uppercase tracking-wider mb-2 border-b-2 border-black">Core Competencies</h3>
+          <h3 className="font-bold text-lg uppercase tracking-wider mb-2 border-b border-white/10">Core Competencies</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
             {data.skills.map((skill, idx) => (
               <input
@@ -102,7 +112,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                   newSkills[idx] = e.target.value;
                   handleDataChange("skills", newSkills);
                 }}
-                className="bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 list-inside list-disc"
+                className="bg-transparent focus:outline-none focus:bg-gray-100 p-1 list-inside list-disc"
               />
             ))}
           </div>
@@ -110,7 +120,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
 
         {/* PROFESSIONAL EXPERIENCE SECTION */}
         <div className="mb-6">
-          <h3 className="font-bold text-lg uppercase tracking-wider mb-4 border-b-2 border-black">Professional Experience</h3>
+          <h3 className="font-bold text-lg uppercase tracking-wider mb-4 border-b border-white/10">Professional Experience</h3>
           
           {/* Job 1 */}
           <div className="mb-5">
@@ -119,13 +129,13 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                 type="text" 
                 value={personalInfo.company1} 
                 onChange={(e) => handleInfoChange("company1", e.target.value)}
-                className="bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 font-bold w-1/2"
+                className="bg-transparent focus:outline-none focus:bg-gray-100 p-1 font-bold w-1/2"
               />
               <input 
                 type="text" 
                 value={personalInfo.dates1} 
                 onChange={(e) => handleInfoChange("dates1", e.target.value)}
-                className="bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 font-bold text-right w-1/3"
+                className="bg-transparent focus:outline-none focus:bg-gray-100 p-1 font-bold text-right w-1/3"
               />
             </div>
             <div className="flex justify-between italic text-sm mb-2">
@@ -133,13 +143,13 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                 type="text" 
                 value={personalInfo.role1 || jobTitle} 
                 onChange={(e) => handleInfoChange("role1", e.target.value)}
-                className="bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 italic w-1/2"
+                className="bg-transparent focus:outline-none focus:bg-gray-100 p-1 italic w-1/2"
               />
               <input 
                 type="text" 
                 value={personalInfo.location1} 
                 onChange={(e) => handleInfoChange("location1", e.target.value)}
-                className="bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 italic text-right w-1/3"
+                className="bg-transparent focus:outline-none focus:bg-gray-100 p-1 italic text-right w-1/3"
               />
             </div>
             
@@ -149,7 +159,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                   value={data.b1}
                   onChange={(e) => handleDataChange("b1", e.target.value)}
                   
-                  className="w-full bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 resize-none"
+                  className="w-full bg-transparent focus:outline-none focus:bg-gray-100 p-1 resize-none"
                 />
               </li>
               <li>
@@ -157,7 +167,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                   value={data.b2}
                   onChange={(e) => handleDataChange("b2", e.target.value)}
                   
-                  className="w-full bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 resize-none"
+                  className="w-full bg-transparent focus:outline-none focus:bg-gray-100 p-1 resize-none"
                 />
               </li>
               <li>
@@ -165,7 +175,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                   value={data.b3}
                   onChange={(e) => handleDataChange("b3", e.target.value)}
                   
-                  className="w-full bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 resize-none"
+                  className="w-full bg-transparent focus:outline-none focus:bg-gray-100 p-1 resize-none"
                 />
               </li>
             </ul>
@@ -178,13 +188,13 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                 type="text" 
                 value={personalInfo.company2} 
                 onChange={(e) => handleInfoChange("company2", e.target.value)}
-                className="bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 font-bold w-1/2"
+                className="bg-transparent focus:outline-none focus:bg-gray-100 p-1 font-bold w-1/2"
               />
               <input 
                 type="text" 
                 value={personalInfo.dates2} 
                 onChange={(e) => handleInfoChange("dates2", e.target.value)}
-                className="bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 font-bold text-right w-1/3"
+                className="bg-transparent focus:outline-none focus:bg-gray-100 p-1 font-bold text-right w-1/3"
               />
             </div>
             <div className="flex justify-between italic text-sm mb-2">
@@ -192,13 +202,13 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                 type="text" 
                 value={personalInfo.role2} 
                 onChange={(e) => handleInfoChange("role2", e.target.value)}
-                className="bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 italic w-1/2"
+                className="bg-transparent focus:outline-none focus:bg-gray-100 p-1 italic w-1/2"
               />
               <input 
                 type="text" 
                 value={personalInfo.location2} 
                 onChange={(e) => handleInfoChange("location2", e.target.value)}
-                className="bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 italic text-right w-1/3"
+                className="bg-transparent focus:outline-none focus:bg-gray-100 p-1 italic text-right w-1/3"
               />
             </div>
             
@@ -208,7 +218,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                   value={personalInfo.bullet2_1}
                   onChange={(e) => handleInfoChange("bullet2_1", e.target.value)}
                   
-                  className="w-full bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 resize-none"
+                  className="w-full bg-transparent focus:outline-none focus:bg-gray-100 p-1 resize-none"
                 />
               </li>
               <li>
@@ -216,7 +226,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                   value={personalInfo.bullet2_2}
                   onChange={(e) => handleInfoChange("bullet2_2", e.target.value)}
                   
-                  className="w-full bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 resize-none"
+                  className="w-full bg-transparent focus:outline-none focus:bg-gray-100 p-1 resize-none"
                 />
               </li>
             </ul>
@@ -225,19 +235,19 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
 
         {/* EDUCATION SECTION */}
         <div>
-          <h3 className="font-bold text-lg uppercase tracking-wider mb-2 border-b-2 border-black">Education</h3>
+          <h3 className="font-bold text-lg uppercase tracking-wider mb-2 border-b border-white/10">Education</h3>
           <div className="flex justify-between font-bold text-sm mb-1">
             <input 
               type="text" 
               value={personalInfo.school} 
               onChange={(e) => handleInfoChange("school", e.target.value)}
-              className="bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 font-bold w-1/2"
+              className="bg-transparent focus:outline-none focus:bg-gray-100 p-1 font-bold w-1/2"
             />
             <input 
               type="text" 
               value={personalInfo.gradDate} 
               onChange={(e) => handleInfoChange("gradDate", e.target.value)}
-              className="bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 font-bold text-right w-1/3"
+              className="bg-transparent focus:outline-none focus:bg-gray-100 p-1 font-bold text-right w-1/3"
             />
           </div>
           <div className="flex justify-between text-sm">
@@ -245,13 +255,13 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
               type="text" 
               value={personalInfo.degree} 
               onChange={(e) => handleInfoChange("degree", e.target.value)}
-              className="bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 w-1/2"
+              className="bg-transparent focus:outline-none focus:bg-gray-100 p-1 w-1/2"
             />
             <input 
               type="text" 
               value={personalInfo.gpa} 
               onChange={(e) => handleInfoChange("gpa", e.target.value)}
-              className="bg-transparent focus:outline-none focus:bg-neo-secondary/30 p-1 text-right w-1/3"
+              className="bg-transparent focus:outline-none focus:bg-gray-100 p-1 text-right w-1/3"
             />
           </div>
         </div>
